@@ -1,12 +1,16 @@
 {
   "name": "accessmate",
   "version": "0.1.0",
+  "description": "ACCESSMATE — Personalized Accessibility & Mobility Decision-Support System",
+  "type": "module",
   "private": true,
   "scripts": {
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "typecheck": "tsc --noEmit",
+    "test": "node --test --test-reporter=spec"
   },
   "dependencies": {
     "next": "16.4.6",
