@@ -4,6 +4,7 @@
  */
 
 import type { BaseEntity } from "./common";
+import type { RequirementLevel } from "../constants";
 
 export type MobilityAid =
   | "manual_wheelchair"
@@ -17,45 +18,74 @@ export type MobilityAid =
 
 export interface MobilityRequirements {
   readonly primaryAid: MobilityAid;
-  readonly requiresStepFreeAccess: boolean;
-  readonly maxStepHeightCm?: number;
-  readonly maxRampSlopePercent?: number;
-  readonly minDoorwayWidthCm?: number;
-  readonly maxWalkingDistanceMeters?: number;
-  readonly requiresElevatorForLevels: boolean;
-  readonly requiresRestStopsEveryMeters?: number;
+  readonly usesWheelchair: boolean;
+  readonly usesMobilityScooter: boolean;
+  readonly usesCrutchesOrWalkingAid: boolean;
+  readonly difficultyClimbingStairs: boolean;
+  
+  // Requirement levels for environmental features
+  readonly requiresStepFreeAccess: RequirementLevel;
+  readonly requiresHandrails: RequirementLevel;
+  readonly requiresAccessibleRestroom: RequirementLevel;
+  readonly requiresElevatorForLevels: RequirementLevel;
+  readonly requiresFrequentRestStops: RequirementLevel;
+
+  // Specific measurements and thresholds (optional nullables)
+  readonly maxStepHeightCm: number | null;
+  readonly maxRampSlopePercent: number | null;
+  readonly minDoorwayWidthCm: number | null;
+  readonly maxWalkingDistanceMeters: number | null;
+  readonly restStopIntervalMeters: number | null;
 }
 
 export interface VisionRequirements {
+  readonly hasBlindness: boolean;
   readonly hasLowVision: boolean;
-  readonly hasTotalBlindness: boolean;
-  readonly requiresHighContrastSignage: boolean;
-  readonly requiresTactileGroundPaving: boolean;
-  readonly requiresBrailleSignage: boolean;
-  readonly requiresAudioAnnouncements: boolean;
+
+  readonly requiresTactileGroundPaving: RequirementLevel;
+  readonly requiresAudioGuidance: RequirementLevel;
+  readonly requiresHighContrastSignage: RequirementLevel;
+  readonly requiresIdentifiableEntrances: RequirementLevel;
+  readonly requiresObstacleFreePaths: RequirementLevel;
+  readonly requiresBrailleSignage: RequirementLevel;
 }
 
 export interface HearingRequirements {
-  readonly hasHearingLoss: boolean;
-  readonly requiresVisualAlarms: boolean;
-  readonly requiresHearingLoop: boolean;
-  readonly requiresCaptionedAnnouncements: boolean;
+  readonly isDeafOrHardOfHearing: boolean;
+
+  readonly requiresVisualAnnouncements: RequirementLevel;
+  readonly requiresWrittenInstructions: RequirementLevel;
+  readonly requiresVisualEmergencyAlerts: RequirementLevel;
+  readonly requiresClearVisualSignage: RequirementLevel;
+  readonly requiresHearingLoop: RequirementLevel;
 }
 
-export interface SensoryCognitiveRequirements {
-  readonly sensitiveToLoudNoise: boolean;
-  readonly sensitiveToCrowds: boolean;
-  readonly sensitiveToFlickeringLights: boolean;
-  readonly requiresQuietSpaces: boolean;
-  readonly requiresSimplifiedWayfinding: boolean;
+export interface SensoryRequirements {
+  readonly prefersQuieterEnvironments: RequirementLevel;
+  readonly requiresPredictableWayfinding: RequirementLevel;
+  readonly prefersSimpleSignage: RequirementLevel;
+  readonly requiresReducedSensoryStimulation: RequirementLevel;
+  readonly prefersClearlyMarkedRoutes: RequirementLevel;
+}
+
+export interface TemporaryRequirements {
+  readonly hasTemporaryLimitation: boolean;
+  readonly temporaryInjury: boolean;
+  readonly limitedWalkingEndurance: boolean;
+  readonly difficultyUsingStairs: boolean;
+  readonly temporaryUseOfCrutches: boolean;
+  readonly description: string;
+  readonly expectedDurationDays: number | null;
 }
 
 export interface UserAccessibilityProfile extends BaseEntity {
   readonly name: string;
+  readonly preferredCategory: string;
+  readonly notes?: string;
   readonly isDefault: boolean;
   readonly mobility: MobilityRequirements;
   readonly vision: VisionRequirements;
   readonly hearing: HearingRequirements;
-  readonly sensory: SensoryCognitiveRequirements;
-  readonly notes?: string;
+  readonly sensory: SensoryRequirements;
+  readonly temporary: TemporaryRequirements;
 }

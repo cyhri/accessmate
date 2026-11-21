@@ -1,18 +1,12 @@
 /**
- * Feature Module: Accessibility Profiles (Scheduled for Phase 3)
+ * Feature Module: Accessibility Profiles (Phase 3 Active)
  * ACCESSMATE: Personalized Accessibility & Mobility Decision-Support System
- *
- * This module will manage user profile states, criteria selection,
- * walking constraints, and assistive device specifications.
  */
 
-export type {
-  MobilityAid,
-  MobilityRequirements,
-  VisionRequirements,
-  HearingRequirements,
-  SensoryCognitiveRequirements,
-  UserAccessibilityProfile,
-} from "@/types/profile";
-
-export const PROFILES_FEATURE_VERSION = "0.1.0-planned";
+export * from "@/types/profile";
+export { profileRepository, getDefaultProfile } from "@/lib/storage/profile-storage";
+export { PROFILE_PRESETS } from "./profile-presets";
+export type { ProfilePreset } from "./profile-presets";
+export { ProfileForm } from "./components/profile-form";
+export { ProfileSummary } from "./components/profile-summary";
+export { RequirementSelector } from "./components/requirement-selector";

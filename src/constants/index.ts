@@ -17,7 +17,31 @@ export const ACCESSIBILITY_DIMENSIONS = [
 export type AccessibilityDimension = (typeof ACCESSIBILITY_DIMENSIONS)[number];
 
 /**
- * Confidence and evidence levels for place accessibility facts.
+ * Preference / Requirement importance levels for personalized accessibility profiles.
+ */
+export const REQUIREMENT_LEVELS = {
+  ESSENTIAL: "essential",       // Must-have blocker if missing
+  PREFERRED: "preferred",       // Nice-to-have, creates minor friction if missing
+  NOT_REQUIRED: "not_required", // Irrelevant or not needed for this user
+} as const;
+
+export type RequirementLevel = (typeof REQUIREMENT_LEVELS)[keyof typeof REQUIREMENT_LEVELS];
+
+/**
+ * Evidence and confidence statuses for place accessibility facts.
+ */
+export const EVIDENCE_STATUSES = {
+  VERIFIED: "verified",             // Physical on-site audit with measurement
+  USER_REPORTED: "user_reported",   // Community / traveler submission
+  UNVERIFIED: "unverified",         // Unconfirmed claim or vendor promotional info
+  UNKNOWN: "unknown",               // Missing or uncollected data (Never assume available or unavailable)
+  NOT_APPLICABLE: "not_applicable", // Does not apply (e.g. elevator in single-floor building)
+} as const;
+
+export type EvidenceStatus = (typeof EVIDENCE_STATUSES)[keyof typeof EVIDENCE_STATUSES];
+
+/**
+ * Legacy evidence levels mapping for backwards compatibility.
  */
 export const EVIDENCE_LEVELS = {
   VERIFIED_AUDIT: "verified_audit",
@@ -56,6 +80,22 @@ export const BARRIER_SEVERITIES = {
 export type BarrierSeverity = (typeof BARRIER_SEVERITIES)[keyof typeof BARRIER_SEVERITIES];
 
 /**
+ * Standard building types recognized by the ACCESSMATE assessment module.
+ */
+export const BUILDING_TYPES = [
+  { value: "educational", label: "Educational Institution (School, University)" },
+  { value: "healthcare", label: "Hospital or Healthcare Facility" },
+  { value: "shopping", label: "Shopping Centre or Retail Complex" },
+  { value: "government", label: "Government Building or Civic Centre" },
+  { value: "office", label: "Office or Commercial Workplace" },
+  { value: "restaurant", label: "Restaurant, Café or Food Venue" },
+  { value: "public_facility", label: "Public Library, Museum, or Transit Station" },
+  { value: "other", label: "Other Built Facility" },
+] as const;
+
+export type BuildingType = (typeof BUILDING_TYPES)[number]["value"];
+
+/**
  * Project Roadmap Phases
  */
 export const PROJECT_PHASES = [
@@ -69,13 +109,13 @@ export const PROJECT_PHASES = [
     phase: 2,
     name: "Application Shell & Design System",
     description: "Responsive layouts, deep navy/teal design tokens, accessible component library, and shell navigation.",
-    status: "active",
+    status: "completed",
   },
   {
     phase: 3,
     name: "Profile & Assessment Modules",
     description: "Personalized accessibility criteria management, place audits, and structured evidence capture.",
-    status: "upcoming",
+    status: "active",
   },
   {
     phase: 4,

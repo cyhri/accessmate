@@ -1,18 +1,17 @@
 /**
- * Feature Module: Built-Environment Assessments (Scheduled for Phase 3)
+ * Feature Module: Built-Environment Assessments (Phase 3 Active)
  * ACCESSMATE: Personalized Accessibility & Mobility Decision-Support System
- *
- * This module will manage structured place accessibility audits,
- * evidence tier classification, and facility attribute capture.
  */
 
-export type {
-  FacilityCategory,
-  EntranceAssessment,
-  InternalVerticalCirculation,
-  RestroomAssessment,
-  SensoryEnvironmentAssessment,
-  PlaceAccessibilityRecord,
-} from "@/types/assessment";
-
-export const ASSESSMENT_FEATURE_VERSION = "0.1.0-planned";
+export * from "@/types/assessment";
+export {
+  assessmentRepository,
+  createEmptyAssessment,
+  createUnknownEvidence,
+} from "@/lib/storage/assessment-storage";
+export { SAMPLE_BUILDING_ASSESSMENTS } from "@/lib/storage/sample-data";
+export { EvidenceBadge } from "./components/evidence-badge";
+export { EvidenceFieldEditor } from "./components/evidence-field-editor";
+export { AssessmentForm } from "./components/assessment-form";
+export { AssessmentDetail } from "./components/assessment-detail";
+export { AssessmentList } from "./components/assessment-list";

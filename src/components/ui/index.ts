@@ -17,4 +17,5 @@ export * from "./section-heading";
 export * from "./empty-state";
 export * from "./loading-state";
 export * from "./breadcrumb";
+export * from "./collapsible-section";
 export * from "./upcoming-notice";

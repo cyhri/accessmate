@@ -28,7 +28,7 @@ export default function DashboardPage() {
         <div className="max-w-3xl space-y-4 relative z-10">
           <div className="flex flex-wrap items-center gap-2">
             <Badge variant="teal" size="sm" dot>
-              Phase 2 Active
+              Phase 3 Active
             </Badge>
             <span className="text-xs font-semibold uppercase tracking-wider text-slate-400">
               Personalized Decision-Support
@@ -111,8 +111,8 @@ export default function DashboardPage() {
                 <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-teal-50 text-teal-700 group-hover:bg-teal-600 group-hover:text-white transition-colors">
                   <Building2 className="h-5 w-5" aria-hidden="true" />
                 </div>
-                <Badge variant="neutral" size="sm">
-                  Phase 3 Upcoming
+                <Badge variant="teal" size="sm">
+                  Phase 3 Active
                 </Badge>
               </div>
               <CardTitle>Check a Building</CardTitle>
@@ -123,7 +123,7 @@ export default function DashboardPage() {
             <CardContent className="pt-2">
               <Link href="/assessment" className="block w-full">
                 <Button variant="outline" size="sm" className="w-full justify-between" rightIcon={<ArrowRight className="h-3.5 w-3.5" />}>
-                  <span>Explore Building Audits</span>
+                  <span>Inspect Building Audits</span>
                 </Button>
               </Link>
             </CardContent>
@@ -136,8 +136,8 @@ export default function DashboardPage() {
                 <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-teal-50 text-teal-700 group-hover:bg-teal-600 group-hover:text-white transition-colors">
                   <UserCheck className="h-5 w-5" aria-hidden="true" />
                 </div>
-                <Badge variant="neutral" size="sm">
-                  Phase 3 Upcoming
+                <Badge variant="teal" size="sm">
+                  Phase 3 Active
                 </Badge>
               </div>
               <CardTitle>Manage Accessibility Profile</CardTitle>
@@ -148,7 +148,7 @@ export default function DashboardPage() {
             <CardContent className="pt-2">
               <Link href="/profile" className="block w-full">
                 <Button variant="outline" size="sm" className="w-full justify-between" rightIcon={<ArrowRight className="h-3.5 w-3.5" />}>
-                  <span>View Profile Schema</span>
+                  <span>Configure Profile</span>
                 </Button>
               </Link>
             </CardContent>
@@ -170,8 +170,8 @@ export default function DashboardPage() {
               <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-slate-100 text-slate-700">
                 <UserCheck className="h-4 w-4" aria-hidden="true" />
               </span>
-              <Badge variant="neutral" size="sm">
-                Phase 3 Upcoming
+              <Badge variant="teal" size="sm">
+                Phase 3 Active
               </Badge>
             </div>
             <div>
@@ -191,8 +191,8 @@ export default function DashboardPage() {
               <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-slate-100 text-slate-700">
                 <Building2 className="h-4 w-4" aria-hidden="true" />
               </span>
-              <Badge variant="neutral" size="sm">
-                Phase 3 Upcoming
+              <Badge variant="teal" size="sm">
+                Phase 3 Active
               </Badge>
             </div>
             <div>

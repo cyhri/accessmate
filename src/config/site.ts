@@ -41,8 +41,8 @@ export const siteConfig: SiteConfig = {
   tagLine: "Personalized Accessibility & Mobility Decision-Support System",
   description:
     "An expert decision-support platform that evaluates compatibility between individual accessibility requirements and physical built environments or transit paths, identifying barriers with transparent, explainable reasoning.",
-  version: "0.2.0",
-  phase: "Phase 2: Professional Application Shell & Design System",
+  version: "0.3.0",
+  phase: "Phase 3: Accessibility Profiles & Building Assessment Modules",
   year: 2026,
   author: "ACCESSMATE Engineering Team",
   url: process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000",
@@ -62,10 +62,18 @@ export const siteConfig: SiteConfig = {
     {
       title: "Accessibility Profile",
       href: "/profile",
-      description: "Manage individual accessibility criteria (mobility, visual, sensory, auditory, stamina)",
-      status: "upcoming",
+      description: "Manage individual functional accessibility criteria (mobility, visual, sensory, auditory, stamina)",
+      status: "ready",
       phase: "Phase 3",
       iconName: "UserCheck",
+    },
+    {
+      title: "Building Assessment",
+      href: "/assessment",
+      description: "Structured built-environment accessibility audits and physical feature data",
+      status: "ready",
+      phase: "Phase 3",
+      iconName: "Building2",
     },
     {
       title: "Route Assessment",
@@ -74,14 +82,6 @@ export const siteConfig: SiteConfig = {
       status: "upcoming",
       phase: "Phase 5",
       iconName: "Navigation",
-    },
-    {
-      title: "Building Assessment",
-      href: "/assessment",
-      description: "Structured built-environment accessibility audits and physical feature data",
-      status: "upcoming",
-      phase: "Phase 3",
-      iconName: "Building2",
     },
     {
       title: "Community Reports",

@@ -1,104 +1,163 @@
-import React from "react";
-import { DoorOpen, ArrowUpDown, Volume2 } from "lucide-react";
+"use client";
+
+import React, { useState, useEffect } from "react";
+import { CheckCircle2 } from "lucide-react";
 import { SectionHeading } from "@/components/ui/section-heading";
 import { Badge } from "@/components/ui/badge";
-import { UpcomingFeatureNotice } from "@/components/ui/upcoming-notice";
-import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
+import { Alert } from "@/components/ui/alert";
+import {
+  type BuildingAssessmentRecord,
+  assessmentRepository,
+  createEmptyAssessment,
+  AssessmentList,
+  AssessmentDetail,
+  AssessmentForm,
+} from "@/features/assessment";
 
 export default function AssessmentPage() {
+  const [view, setView] = useState<"list" | "detail" | "create" | "edit">("list");
+  const [assessments, setAssessments] = useState<BuildingAssessmentRecord[]>(() => {
+    if (typeof window === "undefined") return [];
+    return assessmentRepository.getAssessments();
+  });
+  const [selectedId, setSelectedId] = useState<string | null>(null);
+  const [alertInfo, setAlertInfo] = useState<{
+    variant: "success" | "info" | "error";
+    title: string;
+    description: string;
+  } | null>(null);
+
+  useEffect(() => {
+    const handleUpdate = () => {
+      setAssessments(assessmentRepository.getAssessments());
+    };
+
+    window.addEventListener("accessmate:assessments-updated", handleUpdate);
+    return () => window.removeEventListener("accessmate:assessments-updated", handleUpdate);
+  }, []);
+
+  const handleSelect = (id: string) => {
+    setSelectedId(id);
+    setView("detail");
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+
+  const handleEdit = (id: string) => {
+    setSelectedId(id);
+    setView("edit");
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+
+  const handleCreateNew = () => {
+    setSelectedId(null);
+    setView("create");
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+
+  const handleSave = (record: BuildingAssessmentRecord) => {
+    assessmentRepository.saveAssessment(record);
+    setSelectedId(record.id);
+    setView("detail");
+    setAlertInfo({
+      variant: "success",
+      title: "Assessment Record Saved",
+      description: `Successfully persisted accessibility audit for "${record.general.name}".`,
+    });
+    setTimeout(() => setAlertInfo(null), 4000);
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+
+  const handleDelete = (id: string) => {
+    const target = assessments.find((a) => a.id === id);
+    assessmentRepository.deleteAssessment(id);
+    setSelectedId(null);
+    setView("list");
+    setAlertInfo({
+      variant: "info",
+      title: "Assessment Deleted",
+      description: target
+        ? `Assessment record for "${target.general.name}" was removed.`
+        : "Assessment record was removed.",
+    });
+    setTimeout(() => setAlertInfo(null), 4000);
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+
+  const handleResetSampleData = () => {
+    assessmentRepository.resetToSampleData();
+    setAssessments(assessmentRepository.getAssessments());
+    setSelectedId(null);
+    setView("list");
+    setAlertInfo({
+      variant: "info",
+      title: "Reset to Sample Audits",
+      description: "Restored municipal transit hub and heritage library sample assessments.",
+    });
+    setTimeout(() => setAlertInfo(null), 4000);
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+
+  const selectedRecord = selectedId
+    ? assessments.find((a) => a.id === selectedId) ?? null
+    : null;
+
   return (
-    <div className="space-y-8 pb-8">
+    <div className="space-y-8 pb-10">
       <SectionHeading
         title="Building &amp; Facility Assessment"
-        description="Structured built-environment audits, dimensional measurements, and evidence confidence classification."
+        description="Structured built-environment audits, dimensional measurements, and evidence confidence grading. Never assumes unmeasured parameters to be either present or absent."
         badge={
           <Badge variant="teal" size="md">
-            Phase 3 Milestone
+            Phase 3 Active
           </Badge>
         }
       />
 
-      <UpcomingFeatureNotice
-        title="Structured Built-Environment Audit Module"
-        phase="Phase 3"
-        description="This module captures verifiable architectural measurements across physical venues and grades evidence reliability into confidence tiers."
-        plannedCapabilities={[
-          "Entrance accessibility: Measures step counts, step heights, ramp gradient slope (%), and automated door openers.",
-          "Doorway dimensions: Evaluates clear opening widths (cm) and threshold lip heights.",
-          "Vertical circulation: Verifies operational status of elevators, cabin dimensions, braille buttons, and audible arrival announcements.",
-          "Accessible sanitary facilities: Audits wheelchair turning radius, grab rail heights, and emergency alarm cords.",
-          "Sensory environment: Measures typical ambient decibel levels, glare/flicker lighting, and induction hearing loops.",
-          "Evidence provenance grading: Classifies every attribute into Verified Audit, Official Facility Data, Community Report, or Inferred Heuristic.",
-        ]}
-        architecturalContracts={[
-          "PlaceAccessibilityRecord (src/types/assessment.ts)",
-          "EntranceAssessment (src/types/assessment.ts)",
-          "InternalVerticalCirculation (src/types/assessment.ts)",
-          "RestroomAssessment (src/types/assessment.ts)",
-          "SensoryEnvironmentAssessment (src/types/assessment.ts)",
-          "EvidenceLevel (src/constants/index.ts)",
-        ]}
-      />
+      {alertInfo && (
+        <Alert variant={alertInfo.variant} icon={<CheckCircle2 className="h-5 w-5 text-teal-600" />}>
+          <div className="font-semibold">{alertInfo.title}</div>
+          <div className="text-xs">{alertInfo.description}</div>
+        </Alert>
+      )}
 
-      {/* Building Audit Dimensions Preview */}
-      <div className="space-y-4 pt-4">
-        <h3 className="text-base font-semibold text-slate-900">
-          Core Built-Environment Audit Dimensions
-        </h3>
+      {view === "list" && (
+        <AssessmentList
+          assessments={assessments}
+          onSelect={handleSelect}
+          onEdit={handleEdit}
+          onDelete={handleDelete}
+          onCreateNew={handleCreateNew}
+          onResetSampleData={handleResetSampleData}
+        />
+      )}
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-          <Card variant="subtle">
-            <CardHeader className="pb-3">
-              <div className="flex items-center gap-2 text-teal-700 mb-1">
-                <DoorOpen className="h-4 w-4" aria-hidden="true" />
-                <CardTitle className="text-sm">Entrance &amp; Ingress</CardTitle>
-              </div>
-              <CardDescription className="text-xs">
-                Clear opening widths, ramp slopes, automated sliding doors.
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="text-xs text-slate-600 space-y-1 font-mono">
-              <div>• hasStepFreeAccess: boolean</div>
-              <div>• doorWidthCm: number (&ge;80cm standard)</div>
-              <div>• rampSlopePercent: number (&le;8% ADA/BSI)</div>
-            </CardContent>
-          </Card>
+      {view === "detail" && selectedRecord && (
+        <AssessmentDetail
+          record={selectedRecord}
+          onEdit={() => setView("edit")}
+          onDelete={handleDelete}
+          onBack={() => setView("list")}
+        />
+      )}
 
-          <Card variant="subtle">
-            <CardHeader className="pb-3">
-              <div className="flex items-center gap-2 text-teal-700 mb-1">
-                <ArrowUpDown className="h-4 w-4" aria-hidden="true" />
-                <CardTitle className="text-sm">Vertical Circulation</CardTitle>
-              </div>
-              <CardDescription className="text-xs">
-                Elevator dimensions, operational health, and tactile braille.
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="text-xs text-slate-600 space-y-1 font-mono">
-              <div>• hasElevator: boolean</div>
-              <div>• elevatorOperationalStatus: &quot;operational&quot;</div>
-              <div>• elevatorHasAudioFeedback: boolean</div>
-            </CardContent>
-          </Card>
+      {view === "create" && (
+        <AssessmentForm
+          initialRecord={createEmptyAssessment()}
+          isNew={true}
+          onSave={handleSave}
+          onCancel={() => setView("list")}
+        />
+      )}
 
-          <Card variant="subtle">
-            <CardHeader className="pb-3">
-              <div className="flex items-center gap-2 text-teal-700 mb-1">
-                <Volume2 className="h-4 w-4" aria-hidden="true" />
-                <CardTitle className="text-sm">Acoustics &amp; Lighting</CardTitle>
-              </div>
-              <CardDescription className="text-xs">
-                Environmental sensory demands and hearing assistive technology.
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="text-xs text-slate-600 space-y-1 font-mono">
-              <div>• typicalNoiseLevel: &quot;quiet&quot; | &quot;loud&quot;</div>
-              <div>• hasHearingLoopSystem: boolean</div>
-              <div>• hasHighContrastSignage: boolean</div>
-            </CardContent>
-          </Card>
-        </div>
-      </div>
+      {view === "edit" && selectedRecord && (
+        <AssessmentForm
+          initialRecord={selectedRecord}
+          isNew={false}
+          onSave={handleSave}
+          onCancel={() => setView("detail")}
+          onDelete={handleDelete}
+        />
+      )}
     </div>
   );
 }
