@@ -67,6 +67,20 @@ export type CompatibilityStatus =
   (typeof COMPATIBILITY_STATUSES)[keyof typeof COMPATIBILITY_STATUSES];
 
 /**
+ * Expert System 5-Tier Assessment Outcomes
+ */
+export const ASSESSMENT_OUTCOMES = {
+  SUITABLE: "suitable",
+  SUITABLE_WITH_ARRANGEMENTS: "suitable_with_arrangements",
+  DIFFICULT: "difficult",
+  UNSUITABLE: "unsuitable",
+  INSUFFICIENT_INFORMATION: "insufficient_information",
+} as const;
+
+export type AssessmentOutcome =
+  (typeof ASSESSMENT_OUTCOMES)[keyof typeof ASSESSMENT_OUTCOMES];
+
+/**
  * Severity grading for detected accessibility barriers.
  */
 export const BARRIER_SEVERITIES = {
@@ -115,13 +129,13 @@ export const PROJECT_PHASES = [
     phase: 3,
     name: "Profile & Assessment Modules",
     description: "Personalized accessibility criteria management, place audits, and structured evidence capture.",
-    status: "active",
+    status: "completed",
   },
   {
     phase: 4,
     name: "Expert System Inference Engine",
     description: "Rule evaluation, working memory, conflict resolution, barrier detection, and explainable decision traces.",
-    status: "upcoming",
+    status: "active",
   },
   {
     phase: 5,

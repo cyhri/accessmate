@@ -1,11 +1,12 @@
 /**
- * Profile Local Storage Repository
+ * Profile Local Storage Repository with Storage Safety
  * ACCESSMATE: Personalized Accessibility & Mobility Decision-Support System
  */
 
 import type { UserAccessibilityProfile } from "../../types/profile.ts";
 
-const PROFILE_STORAGE_KEY = "accessmate_user_profile";
+export const PROFILE_STORAGE_KEY = "accessmate_user_profile";
+export const PROFILE_CORRUPT_BACKUP_KEY = "accessmate_user_profile_corrupt_backup";
 
 /**
  * Returns a clean, functional default profile without medical diagnoses.
@@ -77,6 +78,7 @@ export function getDefaultProfile(): UserAccessibilityProfile {
 export const profileRepository = {
   /**
    * Retrieves the stored user profile, or returns null if none has been saved.
+   * If data is corrupted, preserves a recovery backup.
    */
   getProfile(): UserAccessibilityProfile | null {
     if (typeof window === "undefined") {
@@ -88,10 +90,24 @@ export const profileRepository = {
       if (!raw) {
         return null;
       }
-      const parsed = JSON.parse(raw);
-      if (!parsed || typeof parsed !== "object" || !parsed.mobility) {
+
+      let parsed: unknown;
+      try {
+        parsed = JSON.parse(raw);
+      } catch {
+        // Corrupt JSON: back up for recovery
+        localStorage.setItem(PROFILE_CORRUPT_BACKUP_KEY, raw);
+        window.dispatchEvent(new Event("accessmate:storage-health-alert"));
         return null;
       }
+
+      if (!parsed || typeof parsed !== "object" || !("mobility" in parsed)) {
+        // Structurally invalid: back up for recovery
+        localStorage.setItem(PROFILE_CORRUPT_BACKUP_KEY, raw);
+        window.dispatchEvent(new Event("accessmate:storage-health-alert"));
+        return null;
+      }
+
       return parsed as UserAccessibilityProfile;
     } catch {
       return null;

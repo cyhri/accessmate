@@ -1,12 +1,30 @@
 /**
- * Building Assessment Local Storage Repository
+ * Building Assessment Local Storage Repository with Enhanced Storage Safety
  * ACCESSMATE: Personalized Accessibility & Mobility Decision-Support System
  */
 
 import type { BuildingAssessmentRecord, EvidenceItem } from "../../types/assessment.ts";
 import { SAMPLE_BUILDING_ASSESSMENTS } from "./sample-data.ts";
 
-const ASSESSMENTS_STORAGE_KEY = "accessmate_building_assessments";
+export const ASSESSMENTS_STORAGE_KEY = "accessmate_building_assessments";
+export const ASSESSMENTS_CORRUPT_BACKUP_KEY = "accessmate_building_assessments_corrupt_backup";
+
+export interface StorageHealthReport {
+  readonly hasCorruptedData: boolean;
+  readonly warningMessage?: string;
+  readonly backedUpData?: string;
+}
+
+let inMemoryHealthReport: StorageHealthReport = {
+  hasCorruptedData: false,
+};
+
+/**
+ * Checks whether an assessment record is seed demonstration data.
+ */
+export function isDemoAssessment(record: BuildingAssessmentRecord): boolean {
+  return record.id.startsWith("sample-");
+}
 
 /**
  * Creates an evidence container defaulting to "unknown" status.
@@ -101,7 +119,46 @@ export function createEmptyAssessment(): BuildingAssessmentRecord {
 
 export const assessmentRepository = {
   /**
-   * Retrieves all stored building assessments. Seeds with sample records on first launch.
+   * Retrieves the current storage safety health report.
+   */
+  getStorageHealth(): StorageHealthReport {
+    if (typeof window !== "undefined") {
+      try {
+        const backedUp = localStorage.getItem(ASSESSMENTS_CORRUPT_BACKUP_KEY);
+        if (backedUp) {
+          return {
+            hasCorruptedData: true,
+            warningMessage:
+              "Corrupted local assessment data detected. The original data has been preserved in recovery backup.",
+            backedUpData: backedUp,
+          };
+        }
+      } catch {
+        // Fall back to in-memory report
+      }
+    }
+    return inMemoryHealthReport;
+  },
+
+  /**
+   * Clears the storage corruption warning after user acknowledges or resolves recovery.
+   */
+  clearStorageWarning(): void {
+    inMemoryHealthReport = { hasCorruptedData: false };
+    if (typeof window !== "undefined") {
+      try {
+        localStorage.removeItem(ASSESSMENTS_CORRUPT_BACKUP_KEY);
+      } catch {
+        // ignore
+      }
+    }
+  },
+
+  /**
+   * Retrieves all stored building assessments.
+   * If local storage is empty, seeds with sample records.
+   * If stored data is structurally corrupted, safely preserves raw data to a backup
+   * key and does NOT silently overwrite it.
    */
   getAssessments(): BuildingAssessmentRecord[] {
     if (typeof window === "undefined") {
@@ -111,14 +168,40 @@ export const assessmentRepository = {
     try {
       const raw = localStorage.getItem(ASSESSMENTS_STORAGE_KEY);
       if (!raw) {
-        // Seed with sample audits on first run
+        // First launch with clean storage: seed with sample audits
         localStorage.setItem(ASSESSMENTS_STORAGE_KEY, JSON.stringify(SAMPLE_BUILDING_ASSESSMENTS));
         return SAMPLE_BUILDING_ASSESSMENTS;
       }
-      const parsed = JSON.parse(raw);
-      if (!Array.isArray(parsed)) {
-        return SAMPLE_BUILDING_ASSESSMENTS;
+
+      let parsed: unknown;
+      try {
+        parsed = JSON.parse(raw);
+      } catch {
+        // Malformed JSON: preserve corrupted string for recovery, do not silently overwrite
+        localStorage.setItem(ASSESSMENTS_CORRUPT_BACKUP_KEY, raw);
+        inMemoryHealthReport = {
+          hasCorruptedData: true,
+          warningMessage:
+            "Warning: Assessment storage contained invalid JSON. Original content was preserved in recovery backup.",
+          backedUpData: raw,
+        };
+        window.dispatchEvent(new Event("accessmate:storage-health-alert"));
+        return [];
       }
+
+      if (!Array.isArray(parsed)) {
+        // Structurally invalid: preserve for recovery
+        localStorage.setItem(ASSESSMENTS_CORRUPT_BACKUP_KEY, raw);
+        inMemoryHealthReport = {
+          hasCorruptedData: true,
+          warningMessage:
+            "Warning: Assessment storage was not a valid array. Original content was preserved in recovery backup.",
+          backedUpData: raw,
+        };
+        window.dispatchEvent(new Event("accessmate:storage-health-alert"));
+        return [];
+      }
+
       return parsed as BuildingAssessmentRecord[];
     } catch {
       return SAMPLE_BUILDING_ASSESSMENTS;
@@ -186,7 +269,7 @@ export const assessmentRepository = {
   },
 
   /**
-   * Resets all stored assessments back to initial seed data.
+   * Resets all stored assessments back to initial seed demonstration data.
    */
   resetToSampleData(): boolean {
     if (typeof window === "undefined") {

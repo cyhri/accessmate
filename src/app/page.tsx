@@ -28,7 +28,7 @@ export default function DashboardPage() {
         <div className="max-w-3xl space-y-4 relative z-10">
           <div className="flex flex-wrap items-center gap-2">
             <Badge variant="teal" size="sm" dot>
-              Phase 3 Active
+              Phase 4 Active
             </Badge>
             <span className="text-xs font-semibold uppercase tracking-wider text-slate-400">
               Personalized Decision-Support
@@ -52,9 +52,9 @@ export default function DashboardPage() {
           </p>
 
           <div className="pt-2 flex flex-wrap items-center gap-3">
-            <Link href="/routes">
+            <Link href="/inference">
               <Button variant="primary" size="md" rightIcon={<ArrowRight className="h-4 w-4" />}>
-                Assess a Route
+                Run Expert Assessment
               </Button>
             </Link>
             <Link href="/assessment">
@@ -78,12 +78,87 @@ export default function DashboardPage() {
           description="Primary workflows to evaluate routes, inspect physical buildings, and calibrate criteria."
         />
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
-          {/* Action 1: Assess a Route */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5">
+          {/* Action 1: Expert Assessment */}
+          <Card className="hover:border-teal-400 transition-all group flex flex-col justify-between border-teal-200/60 shadow-xs">
+            <CardHeader>
+              <div className="flex items-center justify-between mb-2">
+                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-teal-600 text-white group-hover:bg-teal-700 transition-colors shadow-xs">
+                  <Cpu className="h-5 w-5" aria-hidden="true" />
+                </div>
+                <Badge variant="teal" size="sm">
+                  Phase 4 Active
+                </Badge>
+              </div>
+              <CardTitle>Expert Assessment</CardTitle>
+              <CardDescription>
+                Run forward-chaining rules against your personal profile and building audits for transparent decision traces.
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="pt-2">
+              <Link href="/inference" className="block w-full">
+                <Button variant="primary" size="sm" className="w-full justify-between" rightIcon={<ArrowRight className="h-3.5 w-3.5" />}>
+                  <span>Run Inference</span>
+                </Button>
+              </Link>
+            </CardContent>
+          </Card>
+
+          {/* Action 2: Check a Building */}
           <Card className="hover:border-teal-300 transition-all group flex flex-col justify-between">
             <CardHeader>
               <div className="flex items-center justify-between mb-2">
                 <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-teal-50 text-teal-700 group-hover:bg-teal-600 group-hover:text-white transition-colors">
+                  <Building2 className="h-5 w-5" aria-hidden="true" />
+                </div>
+                <Badge variant="success" size="sm">
+                  Phase 3 Ready
+                </Badge>
+              </div>
+              <CardTitle>Check a Building</CardTitle>
+              <CardDescription>
+                Evaluate facility entrances, door clearances, elevator status, restroom accessibility, and acoustic levels.
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="pt-2">
+              <Link href="/assessment" className="block w-full">
+                <Button variant="outline" size="sm" className="w-full justify-between" rightIcon={<ArrowRight className="h-3.5 w-3.5" />}>
+                  <span>Inspect Audits</span>
+                </Button>
+              </Link>
+            </CardContent>
+          </Card>
+
+          {/* Action 3: Manage Accessibility Profile */}
+          <Card className="hover:border-teal-300 transition-all group flex flex-col justify-between">
+            <CardHeader>
+              <div className="flex items-center justify-between mb-2">
+                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-teal-50 text-teal-700 group-hover:bg-teal-600 group-hover:text-white transition-colors">
+                  <UserCheck className="h-5 w-5" aria-hidden="true" />
+                </div>
+                <Badge variant="success" size="sm">
+                  Phase 3 Ready
+                </Badge>
+              </div>
+              <CardTitle>Manage Profile</CardTitle>
+              <CardDescription>
+                Configure assistive equipment, max step height tolerances, visual contrast requirements, and stamina thresholds.
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="pt-2">
+              <Link href="/profile" className="block w-full">
+                <Button variant="outline" size="sm" className="w-full justify-between" rightIcon={<ArrowRight className="h-3.5 w-3.5" />}>
+                  <span>Edit Profile</span>
+                </Button>
+              </Link>
+            </CardContent>
+          </Card>
+
+          {/* Action 4: Assess a Route */}
+          <Card className="hover:border-teal-300 transition-all group flex flex-col justify-between">
+            <CardHeader>
+              <div className="flex items-center justify-between mb-2">
+                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-slate-100 text-slate-500 group-hover:bg-teal-600 group-hover:text-white transition-colors">
                   <Navigation className="h-5 w-5" aria-hidden="true" />
                 </div>
                 <Badge variant="neutral" size="sm">
@@ -99,56 +174,6 @@ export default function DashboardPage() {
               <Link href="/routes" className="block w-full">
                 <Button variant="outline" size="sm" className="w-full justify-between" rightIcon={<ArrowRight className="h-3.5 w-3.5" />}>
                   <span>Explore Route Advisor</span>
-                </Button>
-              </Link>
-            </CardContent>
-          </Card>
-
-          {/* Action 2: Check a Building */}
-          <Card className="hover:border-teal-300 transition-all group flex flex-col justify-between">
-            <CardHeader>
-              <div className="flex items-center justify-between mb-2">
-                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-teal-50 text-teal-700 group-hover:bg-teal-600 group-hover:text-white transition-colors">
-                  <Building2 className="h-5 w-5" aria-hidden="true" />
-                </div>
-                <Badge variant="teal" size="sm">
-                  Phase 3 Active
-                </Badge>
-              </div>
-              <CardTitle>Check a Building</CardTitle>
-              <CardDescription>
-                Evaluate facility entrances, door clearances, elevator status, restroom accessibility, and acoustic levels.
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="pt-2">
-              <Link href="/assessment" className="block w-full">
-                <Button variant="outline" size="sm" className="w-full justify-between" rightIcon={<ArrowRight className="h-3.5 w-3.5" />}>
-                  <span>Inspect Building Audits</span>
-                </Button>
-              </Link>
-            </CardContent>
-          </Card>
-
-          {/* Action 3: Manage Accessibility Profile */}
-          <Card className="hover:border-teal-300 transition-all group flex flex-col justify-between">
-            <CardHeader>
-              <div className="flex items-center justify-between mb-2">
-                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-teal-50 text-teal-700 group-hover:bg-teal-600 group-hover:text-white transition-colors">
-                  <UserCheck className="h-5 w-5" aria-hidden="true" />
-                </div>
-                <Badge variant="teal" size="sm">
-                  Phase 3 Active
-                </Badge>
-              </div>
-              <CardTitle>Manage Accessibility Profile</CardTitle>
-              <CardDescription>
-                Configure assistive equipment, max step height tolerances, visual contrast requirements, and stamina thresholds.
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="pt-2">
-              <Link href="/profile" className="block w-full">
-                <Button variant="outline" size="sm" className="w-full justify-between" rightIcon={<ArrowRight className="h-3.5 w-3.5" />}>
-                  <span>Configure Profile</span>
                 </Button>
               </Link>
             </CardContent>
@@ -170,8 +195,8 @@ export default function DashboardPage() {
               <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-slate-100 text-slate-700">
                 <UserCheck className="h-4 w-4" aria-hidden="true" />
               </span>
-              <Badge variant="teal" size="sm">
-                Phase 3 Active
+              <Badge variant="success" size="sm">
+                Phase 3 Ready
               </Badge>
             </div>
             <div>
@@ -191,8 +216,8 @@ export default function DashboardPage() {
               <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-slate-100 text-slate-700">
                 <Building2 className="h-4 w-4" aria-hidden="true" />
               </span>
-              <Badge variant="teal" size="sm">
-                Phase 3 Active
+              <Badge variant="success" size="sm">
+                Phase 3 Ready
               </Badge>
             </div>
             <div>
@@ -212,8 +237,8 @@ export default function DashboardPage() {
               <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-slate-100 text-slate-700">
                 <Cpu className="h-4 w-4" aria-hidden="true" />
               </span>
-              <Badge variant="neutral" size="sm">
-                Phase 4 Upcoming
+              <Badge variant="teal" size="sm">
+                Phase 4 Active
               </Badge>
             </div>
             <div>
@@ -223,7 +248,7 @@ export default function DashboardPage() {
               </p>
             </div>
             <div className="pt-2 text-[11px] font-mono text-slate-400 border-t border-slate-100">
-              Contract: @/types/inference.ts
+              Contract: @/features/expert-system/
             </div>
           </div>
 

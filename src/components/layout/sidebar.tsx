@@ -10,6 +10,7 @@ import {
   Building2,
   MessageSquareWarning,
   Settings,
+  Cpu,
   Code2,
   ExternalLink,
 } from "lucide-react";
@@ -24,6 +25,7 @@ const ICON_MAP = {
   Building2,
   MessageSquareWarning,
   Settings,
+  Cpu,
 } as const;
 
 export interface SidebarProps {

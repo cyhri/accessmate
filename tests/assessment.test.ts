@@ -178,15 +178,30 @@ describe("ACCESSMATE — Building Assessment Domain & Persistence Tests", () => 
     assert.equal(restoredList.length, SAMPLE_BUILDING_ASSESSMENTS.length);
   });
 
-  test("assessmentRepository safely handles invalid and corrupted stored data", () => {
-    // 1. Corrupt JSON
-    mockStorage.setItem("accessmate_building_assessments", "{corrupt_json");
-    const fallbackFromCorrupt = assessmentRepository.getAssessments();
-    assert.equal(fallbackFromCorrupt.length, SAMPLE_BUILDING_ASSESSMENTS.length);
+  test("assessmentRepository safely handles invalid and corrupted stored data with backup preservation", () => {
+    // 1. Corrupt JSON: must preserve in backup and flag health report
+    const corruptPayload = "{corrupt_json_payload";
+    mockStorage.setItem("accessmate_building_assessments", corruptPayload);
+    const resultFromCorrupt = assessmentRepository.getAssessments();
+    assert.deepEqual(resultFromCorrupt, []);
 
-    // 2. Non-array JSON
-    mockStorage.setItem("accessmate_building_assessments", JSON.stringify({ not: "an_array" }));
-    const fallbackFromNonArray = assessmentRepository.getAssessments();
-    assert.equal(fallbackFromNonArray.length, SAMPLE_BUILDING_ASSESSMENTS.length);
+    // Verify recovery backup preservation
+    const backup = mockStorage.getItem("accessmate_building_assessments_corrupt_backup");
+    assert.equal(backup, corruptPayload);
+    const health = assessmentRepository.getStorageHealth();
+    assert.equal(health.hasCorruptedData, true);
+
+    // 2. Non-array JSON: must preserve in backup
+    const nonArrayPayload = JSON.stringify({ not: "an_array" });
+    mockStorage.setItem("accessmate_building_assessments", nonArrayPayload);
+    const resultFromNonArray = assessmentRepository.getAssessments();
+    assert.deepEqual(resultFromNonArray, []);
+    assert.equal(
+      mockStorage.getItem("accessmate_building_assessments_corrupt_backup"),
+      nonArrayPayload
+    );
+
+    // Clean up warning
+    assessmentRepository.clearStorageWarning();
   });
 });

@@ -127,18 +127,28 @@ describe("ACCESSMATE — Accessibility Profile Domain & Persistence Tests", () =
     assert.equal(profileRepository.getProfile(), null);
   });
 
-  test("profileRepository handles invalid and malformed stored data gracefully", () => {
+  test("profileRepository handles invalid and malformed stored data gracefully and preserves backup", () => {
     // 1. Corrupt JSON
-    mockStorage.setItem("accessmate_user_profile", "{invalid_json:");
+    const corruptPayload = "{invalid_json:";
+    mockStorage.setItem("accessmate_user_profile", corruptPayload);
     assert.equal(profileRepository.getProfile(), null);
+    assert.equal(
+      mockStorage.getItem("accessmate_user_profile_corrupt_backup"),
+      corruptPayload
+    );
 
     // 2. Non-object primitive
     mockStorage.setItem("accessmate_user_profile", JSON.stringify("string_payload"));
     assert.equal(profileRepository.getProfile(), null);
 
     // 3. Object missing required mobility domain
-    mockStorage.setItem("accessmate_user_profile", JSON.stringify({ name: "Incomplete" }));
+    const incompletePayload = JSON.stringify({ name: "Incomplete" });
+    mockStorage.setItem("accessmate_user_profile", incompletePayload);
     assert.equal(profileRepository.getProfile(), null);
+    assert.equal(
+      mockStorage.getItem("accessmate_user_profile_corrupt_backup"),
+      incompletePayload
+    );
   });
 
   test("all pre-configured persona presets adhere to the profile data structure", () => {

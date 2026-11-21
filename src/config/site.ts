@@ -15,7 +15,8 @@ export interface NavItem {
     | "Navigation"
     | "Building2"
     | "MessageSquareWarning"
-    | "Settings";
+    | "Settings"
+    | "Cpu";
 }
 
 export interface SiteConfig {
@@ -41,8 +42,8 @@ export const siteConfig: SiteConfig = {
   tagLine: "Personalized Accessibility & Mobility Decision-Support System",
   description:
     "An expert decision-support platform that evaluates compatibility between individual accessibility requirements and physical built environments or transit paths, identifying barriers with transparent, explainable reasoning.",
-  version: "0.3.0",
-  phase: "Phase 3: Accessibility Profiles & Building Assessment Modules",
+  version: "0.4.0",
+  phase: "Phase 4: Explainable Expert System Inference Engine",
   year: 2026,
   author: "ACCESSMATE Engineering Team",
   url: process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000",
@@ -74,6 +75,14 @@ export const siteConfig: SiteConfig = {
       status: "ready",
       phase: "Phase 3",
       iconName: "Building2",
+    },
+    {
+      title: "Expert Assessment",
+      href: "/inference",
+      description: "Personalized forward-chaining rule evaluation and transparent decision traces",
+      status: "ready",
+      phase: "Phase 4",
+      iconName: "Cpu",
     },
     {
       title: "Route Assessment",

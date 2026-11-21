@@ -11,19 +11,20 @@ import {
 } from "../src/constants/index.ts";
 import { cn, formatDate } from "../src/lib/utils.ts";
 
-describe("ACCESSMATE Test Suite — Baseline & Phase 3 Roadmap Verification", () => {
-  test("siteConfig contains required project metadata and Phase 3 routes", () => {
+describe("ACCESSMATE Test Suite — Baseline & Phase 4 Roadmap Verification", () => {
+  test("siteConfig contains required project metadata and Phase 4 routes", () => {
     assert.equal(siteConfig.name, "ACCESSMATE");
-    assert.equal(siteConfig.version, "0.3.0");
+    assert.equal(siteConfig.version, "0.4.0");
     assert.ok(siteConfig.tagLine.includes("Decision-Support"));
     assert.ok(siteConfig.description.length > 20);
-    assert.equal(siteConfig.mainNav.length, 6);
+    assert.equal(siteConfig.mainNav.length, 7);
 
     const routes = siteConfig.mainNav.map((item) => item.href);
     assert.ok(routes.includes("/"));
     assert.ok(routes.includes("/profile"));
     assert.ok(routes.includes("/routes"));
     assert.ok(routes.includes("/assessment"));
+    assert.ok(routes.includes("/inference"));
     assert.ok(routes.includes("/reports"));
     assert.ok(routes.includes("/settings"));
   });
@@ -43,7 +44,7 @@ describe("ACCESSMATE Test Suite — Baseline & Phase 3 Roadmap Verification", ()
     assert.equal(BARRIER_SEVERITIES.CRITICAL, "critical");
   });
 
-  test("roadmap phases define Phase 1 and 2 as completed and Phase 3 as active", () => {
+  test("roadmap phases define Phase 1, 2, and 3 as completed and Phase 4 as active", () => {
     const phase1 = PROJECT_PHASES.find((p) => p.phase === 1);
     assert.ok(phase1, "Phase 1 must exist");
     assert.equal(phase1?.status, "completed");
@@ -54,7 +55,11 @@ describe("ACCESSMATE Test Suite — Baseline & Phase 3 Roadmap Verification", ()
 
     const phase3 = PROJECT_PHASES.find((p) => p.phase === 3);
     assert.ok(phase3, "Phase 3 must exist");
-    assert.equal(phase3?.status, "active");
+    assert.equal(phase3?.status, "completed");
+
+    const phase4 = PROJECT_PHASES.find((p) => p.phase === 4);
+    assert.ok(phase4, "Phase 4 must exist");
+    assert.equal(phase4?.status, "active");
   });
 
   test("cn utility cleanly combines class names and handles falsy values", () => {
