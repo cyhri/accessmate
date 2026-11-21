@@ -1,6 +1,6 @@
 # ACCESSMATE — Personalized Accessibility & Mobility Decision-Support System
 
-> **Phase 1 Technical Foundation Baseline**  
+> **Phase 2: Professional Application Shell & Design System Baseline**  
 > An expert decision-support platform designed to evaluate environmental compatibility between individual accessibility requirements and physical built environments or transit paths.
 
 ---
@@ -36,20 +36,21 @@ People frequently arrive at destinations only to encounter unannounced, critical
 
 ---
 
-## 4. Core Planned Features
+## 4. Design Direction & Design System (Phase 2)
 
-The full ACCESSMATE platform is being delivered across structured phases:
+ACCESSMATE features a bespoke, premium SaaS design system created with accessibility, clarity, and trust as primary architectural tenets:
 
-| Feature Dimension | Description | Implementation Phase |
-| :--- | :--- | :--- |
-| **Personalized Accessibility Profiles** | Structured profiles capturing mobility aids, maximum step height, door clearance, lighting needs, hearing loops, and walking stamina limits. | Phase 3 (Planned) |
-| **Place & Facility Audits** | Multi-attribute assessment schema covering entrances, vertical circulation, restrooms, acoustics, lighting, and evidence tier scoring. | Phase 3 (Planned) |
-| **Forward-Chaining Rule Engine** | Working-memory evaluation applying universal design heuristics, barrier severity classification (Critical, High, Medium, Low), and conflict resolution. | Phase 4 (Planned) |
-| **Explainability Facility** | Natural-language explanation traces detailing triggered rules, matched criteria, unmet needs, and confidence levels. | Phase 4 (Planned) |
-| **Route & Spatial Navigation** | Micro-routing avoiding steep inclines, curb drops, cobblestones, and poorly lit corridors using OpenStreetMap and OpenRouteService data. | Phase 5 (Planned) |
-| **Community Reporting & Verification** | Crowd-sourced validation of temporary hazards (e.g., broken lifts, construction scaffolding) with evidence decay mechanics. | Future Phase (Planned) |
-
-> **Scope Note:** Features listed as "Planned" are architectural specifications for upcoming phases. Phase 1 establishes the verified codebase foundation, type contracts, folder hierarchy, design tokens, and CI quality gates.
+- **Color Palette:**
+  - **Deep Navy (`#0f172a` / `#1e293b`):** Grounded, trustworthy primary dark tone for persistent sidebar navigation and high-contrast text.
+  - **Teal Accent (`#0d9488` / `#0f766e`):** Purpose-driven primary action and focus indicator color meeting WCAG AA contrast standards.
+  - **Subtle Mint (`#f0fdfa` / `#ccfbf1`):** Soft contextual backgrounds, positive callouts, and badge backgrounds.
+  - **Soft Off-White (`#f8fafc`):** Application canvas background reducing eye fatigue.
+  - **Thin Subtle Borders (`#e2e8f0`):** Structured visual hierarchy without visual clutter.
+- **Accessibility & Focus Indicators:**
+  - 2px visible teal outline with offset (`focus-visible:ring-2 focus-visible:ring-teal-600 focus-visible:ring-offset-2`) across every interactive element.
+  - Automated operating system `prefers-reduced-motion` detection and disablement of non-essential animations.
+  - Standardized semantic HTML landmarks (`<aside>`, `<header>`, `<main id="main-content">`, `<nav>`, `<footer>`) with skip navigation.
+- **Iconography:** Consistent, accessible icons powered by `lucide-react`.
 
 ---
 
@@ -63,6 +64,7 @@ The full ACCESSMATE platform is being delivered across structured phases:
 
 ### Styling & Design System
 - **Tailwind CSS 4:** Zero-runtime styling with accessible CSS custom properties, responsive breakpoints, high-contrast focus rings, and `prefers-reduced-motion` compliance.
+- **Lucide React:** Consistent iconography with ARIA hidden attributes on decorative glyphs.
 
 ### Code Quality & Testing
 - **ESLint 9 & eslint-config-next:** Linting enforcing React 19 rules and core web vitals.
@@ -71,163 +73,133 @@ The full ACCESSMATE platform is being delivered across structured phases:
 
 ---
 
-## 6. Architecture Overview
-
-ACCESSMATE follows a modular layered architecture to guarantee that domain logic, inference rules, and presentation concerns remain completely decoupled:
-
-```
-┌─────────────────────────────────────────────────────────────┐
-│                    Presentation Layer                       │
-│    Next.js App Router (src/app) + UI Components (src/ui)     │
-└──────────────┬───────────────────────────────┬──────────────┘
-               │                               │
-┌──────────────▼──────────────┐ ┌──────────────▼──────────────┐
-│       Feature Modules       │ │       Layout & Shell        │
-│    (Profiles, Assessment,   │ │    (Header, Footer, Skip,   │
-│     Inference, Routing)     │ │     Navigation, Alerts)     │
-└──────────────┬──────────────┘ └─────────────────────────────┘
-               │
-┌──────────────▼──────────────────────────────────────────────┐
-│             Domain & Knowledge-Base Contracts               │
-│     src/types (Profile, Assessment, Inference, Navigation)  │
-│     src/constants (Dimensions, Evidence Tiers, Severities)  │
-└─────────────────────────────────────────────────────────────┘
-```
-
----
-
-## 7. Project Structure
+## 6. Project Structure
 
 ```
 accessmate/
-├── .env.example              # Safe environment variable template
-├── .gitignore                # Git ignore rules for Next.js, Node, and environments
-├── eslint.config.mjs         # ESLint 9 configuration with Next.js core web vitals
-├── next.config.ts            # Next.js runtime and build configuration
-├── package.json              # Package manifest, dependencies, and scripts
-├── tsconfig.json             # TypeScript strict configuration
-├── public/                   # Static assets (favicons, icons)
-├── tests/                    # Foundation and domain contract test suites
-│   └── foundation.test.ts    # Test suite verifying config, constants, and utilities
+├── .env.example                               # Safe environment variable template
+├── .gitignore                                 # Git ignore rules for Next.js, Node, and environments
+├── eslint.config.mjs                          # ESLint 9 configuration with Next.js core web vitals
+├── next.config.ts                             # Next.js runtime and build configuration
+├── package.json                               # Package manifest, dependencies, and scripts
+├── tsconfig.json                              # TypeScript strict configuration
+├── public/                                    # Static assets (favicons, icons)
+├── tests/                                     # Foundation and domain contract test suites
+│   └── foundation.test.ts                     # Test suite verifying config, constants, and utilities
 └── src/
-    ├── app/                  # Next.js App Router
-    │   ├── error.tsx         # Accessible client error boundary
-    │   ├── globals.css       # Design tokens, accessibility rings, Tailwind imports
-    │   ├── layout.tsx        # Responsive root layout with SkipLink, Header, Footer
-    │   ├── loading.tsx       # Accessible loading skeleton
-    │   ├── not-found.tsx     # Accessible 404 page
-    │   └── page.tsx          # Phase 1 Overview & System Architecture Dashboard
+    ├── app/                                   # Next.js App Router (All 6 core routes)
+    │   ├── assessment/page.tsx                # Building & Facility Assessment module preview
+    │   ├── profile/page.tsx                   # Accessibility Profile criteria module preview
+    │   ├── reports/page.tsx                   # Community hazard reporting module preview
+    │   ├── routes/page.tsx                    # Route Assessment & Mobility Advisor preview
+    │   ├── settings/page.tsx                  # Accessibility preferences & system diagnostics
+    │   ├── error.tsx                          # Accessible client error boundary
+    │   ├── globals.css                        # Design tokens, accessibility rings, Tailwind imports
+    │   ├── layout.tsx                         # Responsive root layout wrapping AppShell
+    │   ├── loading.tsx                        # Accessible loading skeleton
+    │   ├── not-found.tsx                      # Accessible 404 page
+    │   └── page.tsx                           # Phase 2 Dashboard Overview
     ├── components/
-    │   ├── layout/           # Structural layout components
-    │   │   ├── footer.tsx    # Semantic footer with scope disclaimer & metadata
-    │   │   ├── header.tsx    # Accessible navigation bar with phase status badge
-    │   │   └── index.ts      # Layout barrel export
-    │   └── ui/               # Reusable, accessible UI component primitives
-    │       ├── alert.tsx     # Semantic alert callout (role="region", aria-live)
-    │       ├── badge.tsx     # Status and category indicator badges
-    │       ├── button.tsx    # Accessible button with focus rings & variants
-    │       ├── card.tsx      # Semantic card surface components
-    │       ├── container.tsx # Responsive container with max-width scales
-    │       ├── skip-link.tsx # Accessible skip-to-content anchor link
-    │       └── index.ts      # UI component barrel export
+    │   ├── layout/                            # Structural layout components
+    │   │   ├── app-header.tsx                 # Top header with breadcrumb, a11y badge, mobile toggle
+    │   │   ├── app-shell.tsx                  # Desktop/mobile shell orchestrator
+    │   │   ├── footer.tsx                     # Semantic footer with scope disclaimer & metadata
+    │   │   ├── header.tsx                     # Top navigation bar fallback
+    │   │   ├── sidebar.tsx                    # Deep navy navigation sidebar with active indicators
+    │   │   └── index.ts                       # Layout barrel export
+    │   └── ui/                                # Reusable, accessible UI component primitives
+    │       ├── alert.tsx                      # Semantic alert callout (role="region", aria-live)
+    │       ├── badge.tsx                      # Status and category indicator badges
+    │       ├── breadcrumb.tsx                 # Accessible breadcrumb trail
+    │       ├── button.tsx                     # Accessible button with focus rings & variants
+    │       ├── card.tsx                       # Semantic card surface components
+    │       ├── container.tsx                  # Responsive container with max-width scales
+    │       ├── empty-state.tsx                # Accessible empty state indicator
+    │       ├── form-label.tsx                 # Accessible semantic form label
+    │       ├── input.tsx                      # Accessible text input with error states & icons
+    │       ├── loading-state.tsx              # Skeleton loader with screen-reader status
+    │       ├── section-heading.tsx            # Reusable section heading with badges & actions
+    │       ├── select.tsx                     # Accessible dropdown select control
+    │       ├── skip-link.tsx                  # Accessible skip-to-content anchor link
+    │       ├── tooltip.tsx                    # Accessible info popover/tooltip
+    │       ├── upcoming-notice.tsx            # Standardized future phase milestone notice
+    │       └── index.ts                       # UI component barrel export
     ├── config/
-    │   └── site.ts           # System metadata, navigation routes, and links
+    │   └── site.ts                            # System metadata, navigation routes, and links
     ├── constants/
-    │   └── index.ts          # Domain dimensions, evidence levels, barrier severities
-    ├── features/             # Modular feature module contracts
-    │   ├── assessment/       # Built-environment audit interfaces & module barrel
-    │   ├── inference/        # Expert inference engine interfaces & module barrel
-    │   ├── profiles/         # Personalized user criteria interfaces & module barrel
-    │   └── routing/          # Route & spatial navigation interfaces & module barrel
+    │   └── index.ts                           # Domain dimensions, evidence levels, barrier severities
+    ├── features/                              # Modular feature module contracts
+    │   ├── assessment/index.ts                # Built-environment audit interfaces & module barrel
+    │   ├── inference/index.ts                 # Expert inference engine interfaces & module barrel
+    │   ├── profiles/index.ts                  # Personalized user criteria interfaces & module barrel
+    │   └── routing/index.ts                   # Route & spatial navigation interfaces & module barrel
     ├── hooks/
-    │   ├── use-media-query.ts# Accessible matchMedia & reduced-motion subscriptions
-    │   └── index.ts          # Hooks barrel export
+    │   ├── use-media-query.ts                 # Accessible matchMedia & reduced-motion subscriptions
+    │   └── index.ts                           # Hooks barrel export
     ├── lib/
-    │   ├── utils.ts          # CSS class combiner (cn) & accessible date formatters
-    │   └── index.ts          # Lib barrel export
-    └── types/                # Strict domain type definitions
-        ├── assessment.ts     # Facility attributes, entrances, vertical circulation
-        ├── common.ts         # Coordinates, address, base entity models
-        ├── index.ts          # Types barrel export
-        ├── inference.ts      # Working facts, rules, barriers, explanation traces
-        ├── navigation.ts     # Path segments, surface types, route plan contracts
-        └── profile.ts        # Mobility aids, visual, auditory, and sensory criteria
+    │   ├── utils.ts                           # CSS class combiner (cn) & accessible date formatters
+    │   └── index.ts                           # Lib barrel export
+    └── types/                                 # Strict domain type definitions
+        ├── assessment.ts                      # Facility attributes, entrances, vertical circulation
+        ├── common.ts                          # Coordinates, address, base entity models
+        ├── index.ts                           # Types barrel export
+        ├── inference.ts                       # Working facts, rules, barriers, explanation traces
+        ├── navigation.ts                      # Path segments, surface types, route plan contracts
+        └── profile.ts                         # Mobility aids, visual, auditory, and sensory criteria
 ```
 
 ---
 
-## 8. Installation & Setup
+## 7. Installation & Local Development
 
 ### Prerequisites
 - **Node.js:** `v20.x` or higher (recommended: `v24 LTS`)
 - **npm:** `v10.x` or higher
 - **Git**
 
-### Installation Steps
+### Installation & Run Steps
 
-1. Clone the repository:
-   ```bash
-   git clone https://github.com/cyhri/accessmate.git
-   cd accessmate
-   ```
-
-2. Install dependencies:
-   ```bash
-   npm install
-   ```
-
-3. Create local environment configuration:
-   ```bash
-   cp .env.example .env.local
-   ```
-
----
-
-## 9. Local Development & Verification
-
-### Development Server
-Start the local Next.js development server:
 ```bash
+# 1. Clone repository
+git clone https://github.com/cyhri/accessmate.git
+cd accessmate
+
+# 2. Install dependencies
+npm install
+
+# 3. Start local development server
 npm run dev
+
+# 4. Open in browser: http://localhost:3000
 ```
-Open [http://localhost:3000](http://localhost:3000) in your browser.
 
-### Verification Commands
-
-Execute the automated quality pipeline:
+### Verification Pipeline
 
 ```bash
-# 1. Run unit test suite
-npm run test
-
-# 2. Run TypeScript strict type-checking
-npm run typecheck
-
-# 3. Run ESLint code quality checks
-npm run lint
-
-# 4. Run Next.js production build
-npm run build
+npm run test       # Run Node unit test suite
+npm run typecheck  # Run TypeScript strict type verification
+npm run lint       # Run ESLint validation
+npm run build      # Run Next.js production build
 ```
 
 ---
 
-## 10. Development Roadmap
+## 8. Development Roadmap
 
 ```
 Phase 1: Architecture & Technical Foundation [COMPLETED]
 ├── Next.js App Router, React 19, TypeScript strict mode
 ├── Scalable folder structure & modular feature contracts
-├── Reusable accessible UI primitives (Card, Badge, Button, Alert, SkipLink)
 └── CI-ready verification pipeline (Lint, Typecheck, Build, Unit Tests)
 
-Phase 2: Application Shell & Design System [UPCOMING]
-├── High-contrast accessibility themes and font scaling
-├── Interactive dashboard navigation & state providers
-└── Screen-reader verified form components
+Phase 2: Professional Application Shell & Design System [COMPLETED]
+├── Deep Navy & Teal design system with subtle mint backgrounds
+├── Desktop sticky sidebar navigation with mobile responsive drawer
+├── Complete accessible UI primitives (Card, Badge, Button, Input, Select, Tooltip, Breadcrumb)
+└── 6 core application routes (Dashboard, Profile, Routes, Assessment, Reports, Settings)
 
 Phase 3: Profiles & Assessment Modules [UPCOMING]
-├── User accessibility profile builder & local storage persistence
+├── User accessibility profile builder & criteria state management
 ├── Structured place audit input forms with step/incline measurements
 └── Evidence provenance and confidence scoring
 
@@ -244,6 +216,6 @@ Phase 5: Routing & Spatial Decision Support [UPCOMING]
 
 ---
 
-## 11. Important Scope & Legal Disclaimer
+## 9. Important Scope & Legal Disclaimer
 
 ACCESSMATE is an informational decision-support and planning tool. It is **not** an official municipal accessibility certification, an engineering substitute for an on-site professional access audit, or a guarantee that a specific location or route is safe to traverse. Users must always verify on-site conditions when traveling.

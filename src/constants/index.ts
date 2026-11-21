@@ -63,13 +63,13 @@ export const PROJECT_PHASES = [
     phase: 1,
     name: "Foundation & Architecture",
     description: "Technology stack setup, folder structure, core type contracts, styling, and CI-ready lint/build baseline.",
-    status: "active",
+    status: "completed",
   },
   {
     phase: 2,
     name: "Application Shell & Design System",
-    description: "Responsive layouts, accessibility-first theme system, navigational framework, and interactive shell.",
-    status: "upcoming",
+    description: "Responsive layouts, deep navy/teal design tokens, accessible component library, and shell navigation.",
+    status: "active",
   },
   {
     phase: 3,

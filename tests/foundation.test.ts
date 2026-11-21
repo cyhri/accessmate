@@ -11,16 +11,21 @@ import {
 } from "../src/constants/index.ts";
 import { cn, formatDate } from "../src/lib/utils.ts";
 
-describe("ACCESSMATE Phase 1 Foundation Test Suite", () => {
-  test("siteConfig contains required project metadata", () => {
+describe("ACCESSMATE Test Suite — Phase 1 & 2 Verification", () => {
+  test("siteConfig contains required project metadata and Phase 2 routes", () => {
     assert.equal(siteConfig.name, "ACCESSMATE");
+    assert.equal(siteConfig.version, "0.2.0");
     assert.ok(siteConfig.tagLine.includes("Decision-Support"));
     assert.ok(siteConfig.description.length > 20);
-    assert.ok(siteConfig.mainNav.length >= 4);
+    assert.equal(siteConfig.mainNav.length, 6);
 
-    const overviewNav = siteConfig.mainNav.find((item) => item.href === "/");
-    assert.ok(overviewNav, "Overview navigation link must exist");
-    assert.equal(overviewNav?.status, "ready");
+    const routes = siteConfig.mainNav.map((item) => item.href);
+    assert.ok(routes.includes("/"));
+    assert.ok(routes.includes("/profile"));
+    assert.ok(routes.includes("/routes"));
+    assert.ok(routes.includes("/assessment"));
+    assert.ok(routes.includes("/reports"));
+    assert.ok(routes.includes("/settings"));
   });
 
   test("domain constants enforce required accessibility dimensions", () => {
@@ -38,10 +43,14 @@ describe("ACCESSMATE Phase 1 Foundation Test Suite", () => {
     assert.equal(BARRIER_SEVERITIES.CRITICAL, "critical");
   });
 
-  test("roadmap phases define Phase 1 as active", () => {
+  test("roadmap phases define Phase 1 as completed and Phase 2 as active", () => {
     const phase1 = PROJECT_PHASES.find((p) => p.phase === 1);
     assert.ok(phase1, "Phase 1 must exist");
-    assert.equal(phase1?.status, "active");
+    assert.equal(phase1?.status, "completed");
+
+    const phase2 = PROJECT_PHASES.find((p) => p.phase === 2);
+    assert.ok(phase2, "Phase 2 must exist");
+    assert.equal(phase2?.status, "active");
   });
 
   test("cn utility cleanly combines class names and handles falsy values", () => {

@@ -1,35 +1,56 @@
 import React from "react";
 import { cn } from "@/lib/utils";
+import {
+  Info,
+  CheckCircle2,
+  AlertTriangle,
+  AlertOctagon,
+  Sparkles,
+} from "lucide-react";
 
 export interface AlertProps extends React.HTMLAttributes<HTMLDivElement> {
-  readonly variant?: "info" | "warning" | "error" | "success";
+  readonly variant?: "info" | "teal" | "warning" | "error" | "success" | "neutral";
+  readonly icon?: React.ReactNode;
 }
 
 export function Alert({
   className,
   variant = "info",
+  icon,
   children,
   ...props
 }: AlertProps) {
   const variantStyles = {
-    info: "border-blue-200 bg-blue-50 text-blue-900 dark:border-blue-900/60 dark:bg-blue-950/40 dark:text-blue-200",
-    warning: "border-amber-200 bg-amber-50 text-amber-900 dark:border-amber-900/60 dark:bg-amber-950/40 dark:text-amber-200",
-    error: "border-rose-200 bg-rose-50 text-rose-900 dark:border-rose-900/60 dark:bg-rose-950/40 dark:text-rose-200",
-    success: "border-emerald-200 bg-emerald-50 text-emerald-900 dark:border-emerald-900/60 dark:bg-emerald-950/40 dark:text-emerald-200",
+    info: "border-blue-200 bg-blue-50/70 text-blue-900",
+    teal: "border-teal-200 bg-teal-50/70 text-teal-900",
+    warning: "border-amber-200 bg-amber-50/70 text-amber-900",
+    error: "border-rose-200 bg-rose-50/70 text-rose-900",
+    success: "border-emerald-200 bg-emerald-50/70 text-emerald-900",
+    neutral: "border-slate-200 bg-slate-50/70 text-slate-800",
+  }[variant];
+
+  const defaultIcons = {
+    info: <Info className="h-4 w-4 shrink-0 text-blue-600 mt-0.5" aria-hidden="true" />,
+    teal: <Sparkles className="h-4 w-4 shrink-0 text-teal-600 mt-0.5" aria-hidden="true" />,
+    warning: <AlertTriangle className="h-4 w-4 shrink-0 text-amber-600 mt-0.5" aria-hidden="true" />,
+    error: <AlertOctagon className="h-4 w-4 shrink-0 text-rose-600 mt-0.5" aria-hidden="true" />,
+    success: <CheckCircle2 className="h-4 w-4 shrink-0 text-emerald-600 mt-0.5" aria-hidden="true" />,
+    neutral: <Info className="h-4 w-4 shrink-0 text-slate-600 mt-0.5" aria-hidden="true" />,
   }[variant];
 
   return (
     <div
       role="region"
-      aria-label="Important notice"
+      aria-label="System notification"
       className={cn(
-        "relative w-full rounded-lg border p-4 text-sm leading-relaxed",
+        "relative flex w-full gap-3 rounded-xl border p-4 text-sm leading-relaxed shadow-2xs",
         variantStyles,
         className
       )}
       {...props}
     >
-      {children}
+      <div className="shrink-0">{icon ?? defaultIcons}</div>
+      <div className="flex-1 space-y-1">{children}</div>
     </div>
   );
 }
@@ -40,7 +61,7 @@ export function AlertTitle({
 }: React.HTMLAttributes<HTMLHeadingElement>) {
   return (
     <h5
-      className={cn("mb-1 font-semibold leading-none tracking-tight", className)}
+      className={cn("font-semibold leading-none tracking-tight text-inherit", className)}
       {...props}
     />
   );
@@ -52,7 +73,7 @@ export function AlertDescription({
 }: React.HTMLAttributes<HTMLParagraphElement>) {
   return (
     <div
-      className={cn("text-xs md:text-sm [&_p]:leading-relaxed opacity-90", className)}
+      className={cn("text-xs sm:text-sm leading-relaxed opacity-90", className)}
       {...props}
     />
   );
