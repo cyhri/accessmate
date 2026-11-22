@@ -28,7 +28,7 @@ export default function DashboardPage() {
         <div className="max-w-3xl space-y-4 relative z-10">
           <div className="flex flex-wrap items-center gap-2">
             <Badge variant="teal" size="sm" dot>
-              Phase 4 Active
+              Phase 5 Active
             </Badge>
             <span className="text-xs font-semibold uppercase tracking-wider text-slate-400">
               Personalized Decision-Support
@@ -155,14 +155,14 @@ export default function DashboardPage() {
           </Card>
 
           {/* Action 4: Assess a Route */}
-          <Card className="hover:border-teal-300 transition-all group flex flex-col justify-between">
+          <Card className="hover:border-teal-400 transition-all group flex flex-col justify-between border-teal-200/60 shadow-xs">
             <CardHeader>
               <div className="flex items-center justify-between mb-2">
-                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-slate-100 text-slate-500 group-hover:bg-teal-600 group-hover:text-white transition-colors">
+                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-teal-600 text-white group-hover:bg-teal-700 transition-colors shadow-xs">
                   <Navigation className="h-5 w-5" aria-hidden="true" />
                 </div>
-                <Badge variant="neutral" size="sm">
-                  Phase 5 Upcoming
+                <Badge variant="teal" size="sm">
+                  Phase 5 Active
                 </Badge>
               </div>
               <CardTitle>Assess a Route</CardTitle>
@@ -172,7 +172,7 @@ export default function DashboardPage() {
             </CardHeader>
             <CardContent className="pt-2">
               <Link href="/routes" className="block w-full">
-                <Button variant="outline" size="sm" className="w-full justify-between" rightIcon={<ArrowRight className="h-3.5 w-3.5" />}>
+                <Button variant="primary" size="sm" className="w-full justify-between" rightIcon={<ArrowRight className="h-3.5 w-3.5" />}>
                   <span>Explore Route Advisor</span>
                 </Button>
               </Link>
@@ -237,8 +237,8 @@ export default function DashboardPage() {
               <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-slate-100 text-slate-700">
                 <Cpu className="h-4 w-4" aria-hidden="true" />
               </span>
-              <Badge variant="teal" size="sm">
-                Phase 4 Active
+              <Badge variant="success" size="sm">
+                Phase 4 Complete
               </Badge>
             </div>
             <div>
@@ -258,8 +258,8 @@ export default function DashboardPage() {
               <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-slate-100 text-slate-700">
                 <MapPin className="h-4 w-4" aria-hidden="true" />
               </span>
-              <Badge variant="neutral" size="sm">
-                Phase 5 Upcoming
+              <Badge variant="teal" size="sm">
+                Phase 5 Active
               </Badge>
             </div>
             <div>
@@ -269,7 +269,7 @@ export default function DashboardPage() {
               </p>
             </div>
             <div className="pt-2 text-[11px] font-mono text-slate-400 border-t border-slate-100">
-              Contract: @/types/navigation.ts
+              Contract: @/features/routing/
             </div>
           </div>
         </div>

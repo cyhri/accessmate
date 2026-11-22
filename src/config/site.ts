@@ -42,8 +42,8 @@ export const siteConfig: SiteConfig = {
   tagLine: "Personalized Accessibility & Mobility Decision-Support System",
   description:
     "An expert decision-support platform that evaluates compatibility between individual accessibility requirements and physical built environments or transit paths, identifying barriers with transparent, explainable reasoning.",
-  version: "0.4.0",
-  phase: "Phase 4: Explainable Expert System Inference Engine",
+  version: "0.5.0",
+  phase: "Phase 5: Accessibility-Aware Mapping & Route Intelligence",
   year: 2026,
   author: "ACCESSMATE Engineering Team",
   url: process.env.NEXT_PUBLIC_APP_URL ?? "http://localhost:3000",
@@ -87,8 +87,8 @@ export const siteConfig: SiteConfig = {
     {
       title: "Route Assessment",
       href: "/routes",
-      description: "Micro-routing, surface barrier avoidance, slope grading, and transit accessibility",
-      status: "upcoming",
+      description: "Interactive wheelchair-aware micro-routing, surface barrier avoidance, and slope grading analysis",
+      status: "ready",
       phase: "Phase 5",
       iconName: "Navigation",
     },
