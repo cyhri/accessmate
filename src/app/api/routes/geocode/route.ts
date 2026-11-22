@@ -17,7 +17,7 @@ export async function GET(request: Request) {
       const url = `https://api.heigit.org/pelias/v1/search?text=${encodeURIComponent(text)}&size=5`;
       const response = await fetch(url, {
         headers: {
-          Authorization: apiKey,
+
           Accept: "application/json",
         },
         signal: AbortSignal.timeout(5000),

@@ -59,7 +59,7 @@ export async function POST(request: Request) {
     const destName = destinationLabel || "Selected Destination";
 
     // Attempt live call if ORS_API_KEY is configured
-    if (apiKey && apiKey !== "your_openrouteservice_api_key_here") {
+    if (apiKey && apiKey.trim() && apiKey.trim() !== "your_openrouteservice_api_key_here") {
       try {
         const { options } = buildORSWheelchairRestrictions(safeProfile);
         const url = "https://api.heigit.org/openrouteservice/v2/directions/wheelchair/geojson";
