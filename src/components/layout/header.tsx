@@ -33,7 +33,7 @@ export function Header() {
             </Link>
 
             <Badge variant="teal" className="hidden sm:inline-flex ml-2">
-              Phase 4 Active
+              Phase 5 Active
             </Badge>
           </div>
 

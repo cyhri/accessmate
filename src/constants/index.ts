@@ -135,12 +135,12 @@ export const PROJECT_PHASES = [
     phase: 4,
     name: "Expert System Inference Engine",
     description: "Rule evaluation, working memory, conflict resolution, barrier detection, and explainable decision traces.",
-    status: "active",
+    status: "completed",
   },
   {
     phase: 5,
     name: "Routing & Spatial Decision Support",
     description: "Terrain barrier avoidance, route compatibility analysis, and spatial mapping overlays.",
-    status: "upcoming",
+    status: "active",
   },
 ] as const;

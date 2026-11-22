@@ -10,16 +10,21 @@
     "start": "next start",
     "lint": "eslint",
     "typecheck": "tsc --noEmit",
-    "test": "node --test --test-reporter=spec"
+    "test": "tsx --test --test-reporter=spec tests/foundation.test.ts tests/profile.test.ts tests/assessment.test.ts tests/inference.test.ts tests/routing.test.ts"
   },
   "dependencies": {
+    "leaflet": "^1.9.4",
     "lucide-react": "^1.77.0",
     "next": "16.4.6",
     "react": "19.3.0",
-    "react-dom": "19.3.0"
+    "react-dom": "19.3.0",
+    "react-leaflet": "^5.0.0"
   },
   "devDependencies": {
+    "tsx": "^4.7.2",
+    "ts-node": "^10.9.2",
     "@tailwindcss/turbopack": "4.3.3",
+    "@types/leaflet": "^1.9.22",
     "@types/node": "^20",
     "@types/react": "^19",
     "@types/react-dom": "^19",

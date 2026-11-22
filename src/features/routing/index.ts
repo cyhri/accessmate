@@ -1,15 +1,14 @@
 /**
- * Feature Module: Route & Spatial Decision Support (Scheduled for Phase 5)
+ * Feature Module: Route & Spatial Decision Support (Phase 5 Active)
  * ACCESSMATE: Personalized Accessibility & Mobility Decision-Support System
- *
- * This module will compute accessible route paths, surface barrier
- * avoidance, and spatial mapping overlays.
  */
 
-export type {
-  SurfaceType,
-  PathSegment,
-  RoutePlan,
-} from "@/types/navigation";
+export * from "./types.ts";
+export * from "./ors-client.ts";
+export * from "./demo-routes.ts";
+export * from "./rules/route-rules.ts";
+export { RouteInferenceEngine } from "./engine/route-inference-engine.ts";
+export { LocationSearch } from "./components/location-search.tsx";
+export { RouteDetailsPanel } from "./components/route-details-panel.tsx";
 
-export const ROUTING_FEATURE_VERSION = "0.1.0-planned";
+export const ROUTING_FEATURE_VERSION = "0.5.0";

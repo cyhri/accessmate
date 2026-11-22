@@ -1,7 +1,7 @@
 import { test, describe } from "node:test";
 import assert from "node:assert/strict";
 
-import { siteConfig } from "../src/config/site.ts";
+import { siteConfig } from "../src/config/site";
 import {
   ACCESSIBILITY_DIMENSIONS,
   EVIDENCE_LEVELS,
@@ -11,10 +11,10 @@ import {
 } from "../src/constants/index.ts";
 import { cn, formatDate } from "../src/lib/utils.ts";
 
-describe("ACCESSMATE Test Suite — Baseline & Phase 4 Roadmap Verification", () => {
-  test("siteConfig contains required project metadata and Phase 4 routes", () => {
+describe("ACCESSMATE Test Suite — Baseline & Phase 5 Roadmap Verification", () => {
+  test("siteConfig contains required project metadata and Phase 5 routes", () => {
     assert.equal(siteConfig.name, "ACCESSMATE");
-    assert.equal(siteConfig.version, "0.4.0");
+    assert.equal(siteConfig.version, "0.5.0");
     assert.ok(siteConfig.tagLine.includes("Decision-Support"));
     assert.ok(siteConfig.description.length > 20);
     assert.equal(siteConfig.mainNav.length, 7);
@@ -27,6 +27,9 @@ describe("ACCESSMATE Test Suite — Baseline & Phase 4 Roadmap Verification", ()
     assert.ok(routes.includes("/inference"));
     assert.ok(routes.includes("/reports"));
     assert.ok(routes.includes("/settings"));
+
+    const routeNav = siteConfig.mainNav.find((item) => item.href === "/routes");
+    assert.equal(routeNav?.status, "ready");
   });
 
   test("domain constants enforce required accessibility dimensions", () => {
@@ -44,7 +47,7 @@ describe("ACCESSMATE Test Suite — Baseline & Phase 4 Roadmap Verification", ()
     assert.equal(BARRIER_SEVERITIES.CRITICAL, "critical");
   });
 
-  test("roadmap phases define Phase 1, 2, and 3 as completed and Phase 4 as active", () => {
+  test("roadmap phases define Phase 1, 2, 3, and 4 as completed and Phase 5 as active", () => {
     const phase1 = PROJECT_PHASES.find((p) => p.phase === 1);
     assert.ok(phase1, "Phase 1 must exist");
     assert.equal(phase1?.status, "completed");
@@ -59,7 +62,11 @@ describe("ACCESSMATE Test Suite — Baseline & Phase 4 Roadmap Verification", ()
 
     const phase4 = PROJECT_PHASES.find((p) => p.phase === 4);
     assert.ok(phase4, "Phase 4 must exist");
-    assert.equal(phase4?.status, "active");
+    assert.equal(phase4?.status, "completed");
+
+    const phase5 = PROJECT_PHASES.find((p) => p.phase === 5);
+    assert.ok(phase5, "Phase 5 must exist");
+    assert.equal(phase5?.status, "active");
   });
 
   test("cn utility cleanly combines class names and handles falsy values", () => {
