@@ -5,19 +5,81 @@ import { DEMO_LOCATIONS } from "@/features/routing/demo-routes";
 export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
   const text = searchParams.get("text")?.trim() ?? "";
+  const latStr = searchParams.get("lat");
+  const lonStr = searchParams.get("lon");
+  const apiKey = process.env.ORS_API_KEY;
 
+  // 1. Reverse Geocoding support (when lat and lon are provided)
+  if (latStr && lonStr) {
+    const lat = parseFloat(latStr);
+    const lon = parseFloat(lonStr);
+
+    if (!isNaN(lat) && !isNaN(lon)) {
+      if (apiKey && apiKey !== "your_openrouteservice_api_key_here") {
+        try {
+          const revUrl = `https://api.openrouteservice.org/geocode/reverse?point.lat=${lat}&point.lon=${lon}&size=1`;
+          const revRes = await fetch(revUrl, {
+            headers: {
+              Authorization: apiKey,
+              Accept: "application/json",
+            },
+            signal: AbortSignal.timeout(5000),
+          });
+
+          if (revRes.ok) {
+            const data = await revRes.json();
+            const feat = data.features?.[0];
+            if (feat) {
+              const label =
+                feat.properties?.label ??
+                feat.properties?.name ??
+                `Location (${lat.toFixed(4)}, ${lon.toFixed(4)})`;
+              const name =
+                feat.properties?.name ??
+                feat.properties?.street ??
+                `Point (${lat.toFixed(4)}, ${lon.toFixed(4)})`;
+
+              return NextResponse.json({
+                result: {
+                  id: feat.id ?? `rev-${Date.now()}`,
+                  label,
+                  name,
+                  coordinates: { latitude: lat, longitude: lon },
+                  locality: feat.properties?.locality,
+                  country: feat.properties?.country,
+                },
+                source: "live_pelias_reverse",
+              });
+            }
+          }
+        } catch {
+          // Graceful fallback to formatted coordinates
+        }
+      }
+
+      return NextResponse.json({
+        result: {
+          id: `rev-${Date.now()}`,
+          label: `Location (${lat.toFixed(4)}, ${lon.toFixed(4)})`,
+          name: `Point (${lat.toFixed(4)}, ${lon.toFixed(4)})`,
+          coordinates: { latitude: lat, longitude: lon },
+        },
+        source: "coordinate_format",
+      });
+    }
+  }
+
+  // 2. Forward Geocoding Text Search
   if (!text || text.length < 2) {
     return NextResponse.json({ results: [] });
   }
 
-  const apiKey = process.env.ORS_API_KEY;
-
   if (apiKey && apiKey !== "your_openrouteservice_api_key_here") {
     try {
-      const url = `https://api.heigit.org/pelias/v1/search?text=${encodeURIComponent(text)}&size=5`;
+      const url = `https://api.openrouteservice.org/geocode/search?text=${encodeURIComponent(text)}&size=5`;
       const response = await fetch(url, {
         headers: {
-
+          Authorization: apiKey,
           Accept: "application/json",
         },
         signal: AbortSignal.timeout(5000),

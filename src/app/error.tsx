@@ -1,12 +1,9 @@
 "use client";
 
 import React, { useEffect } from "react";
-import Link from "next/link";
-import { Container } from "@/components/ui/container";
 import { Button } from "@/components/ui/button";
-import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert";
 
-export default function ErrorBoundary({
+export default function ErrorPage({
   error,
   reset,
 }: {
@@ -14,36 +11,18 @@ export default function ErrorBoundary({
   reset: () => void;
 }) {
   useEffect(() => {
-    // Log unexpected runtime error to console for debugging
-    console.error("ACCESSMATE application error:", error);
+    console.error("ACCESSMATE Error:", error);
   }, [error]);
 
   return (
-    <div className="flex min-h-[60vh] items-center justify-center py-16">
-      <Container size="sm" className="space-y-6">
-        <Alert variant="error">
-          <AlertTitle>Application Error</AlertTitle>
-          <AlertDescription>
-            An unexpected error occurred while rendering this view.
-            {error.digest && (
-              <span className="block mt-1 font-mono text-xs opacity-75">
-                Digest: {error.digest}
-              </span>
-            )}
-          </AlertDescription>
-        </Alert>
-
-        <div className="flex items-center justify-center gap-3">
-          <Button variant="primary" onClick={() => reset()}>
-            Try Again
-          </Button>
-          <Link href="/">
-            <Button variant="outline">
-              Return Home
-            </Button>
-          </Link>
-        </div>
-      </Container>
+    <div className="flex min-h-[50vh] flex-col items-center justify-center text-center px-4">
+      <h2 className="text-base font-semibold text-zinc-900 mb-2">An error occurred</h2>
+      <p className="text-xs sm:text-sm text-zinc-500 mb-6 max-w-md">
+        An unexpected error occurred while processing the accessibility data.
+      </p>
+      <Button onClick={reset} variant="primary" size="md">
+        Try Again
+      </Button>
     </div>
   );
 }

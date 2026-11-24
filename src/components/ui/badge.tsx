@@ -16,23 +16,23 @@ export function Badge({
   ...props
 }: BadgeProps) {
   const variantStyles = {
-    teal: "bg-teal-50 text-teal-700 border-teal-200",
-    navy: "bg-slate-900 text-slate-100 border-slate-700",
-    success: "bg-emerald-50 text-emerald-700 border-emerald-200",
-    warning: "bg-amber-50 text-amber-700 border-amber-200",
-    error: "bg-rose-50 text-rose-700 border-rose-200",
-    neutral: "bg-slate-100 text-slate-700 border-slate-200",
-    outline: "bg-transparent text-slate-700 border-slate-300",
+    teal: "bg-teal-50 text-teal-800 border-teal-200/80",
+    navy: "bg-zinc-900 text-zinc-100 border-zinc-800",
+    success: "bg-emerald-50 text-emerald-800 border-emerald-200/80",
+    warning: "bg-amber-50 text-amber-800 border-amber-200/80",
+    error: "bg-rose-50 text-rose-800 border-rose-200/80",
+    neutral: "bg-zinc-100 text-zinc-700 border-zinc-200",
+    outline: "bg-transparent text-zinc-700 border-zinc-300",
   }[variant];
 
   const dotStyles = {
     teal: "bg-teal-600",
-    navy: "bg-slate-400",
+    navy: "bg-zinc-400",
     success: "bg-emerald-600",
     warning: "bg-amber-600",
     error: "bg-rose-600",
-    neutral: "bg-slate-500",
-    outline: "bg-slate-500",
+    neutral: "bg-zinc-500",
+    outline: "bg-zinc-500",
   }[variant];
 
   const sizeStyles = {
@@ -43,14 +43,14 @@ export function Badge({
   return (
     <span
       className={cn(
-        "inline-flex items-center gap-1.5 rounded-full border font-medium tracking-wide transition-colors",
+        "inline-flex items-center gap-1.5 rounded-md border font-medium tracking-normal transition-colors",
         variantStyles,
         sizeStyles,
         className
       )}
       {...props}
     >
-      {dot && <span className={cn("h-1.5 w-1.5 rounded-full", dotStyles)} aria-hidden="true" />}
+      {dot && <span className={cn("h-1.5 w-1.5 rounded-full shrink-0", dotStyles)} aria-hidden="true" />}
       <span>{children}</span>
     </span>
   );

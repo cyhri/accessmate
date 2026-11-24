@@ -29,17 +29,17 @@ export function EvidenceBadge({ status, size = "sm", showIcon = true }: Evidence
     unknown: {
       label: "Not Surveyed / Unknown",
       variant: "neutral" as const,
-      icon: <HelpCircle className="h-3 w-3 shrink-0 text-slate-400" aria-hidden="true" />,
+      icon: <HelpCircle className="h-3 w-3 shrink-0 text-zinc-400" aria-hidden="true" />,
     },
     not_applicable: {
       label: "Not Applicable",
       variant: "outline" as const,
-      icon: <MinusCircle className="h-3 w-3 shrink-0 text-slate-400" aria-hidden="true" />,
+      icon: <MinusCircle className="h-3 w-3 shrink-0 text-zinc-400" aria-hidden="true" />,
     },
   }[status] ?? {
     label: status,
     variant: "neutral" as const,
-    icon: <HelpCircle className="h-3 w-3 shrink-0 text-slate-400" aria-hidden="true" />,
+    icon: <HelpCircle className="h-3 w-3 shrink-0 text-zinc-400" aria-hidden="true" />,
   };
 
   return (

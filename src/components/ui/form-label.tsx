@@ -14,10 +14,10 @@ export function FormLabel({
   ...props
 }: FormLabelProps) {
   return (
-    <div className="flex flex-col space-y-1 mb-1.5">
+    <div className="flex flex-col space-y-0.5 mb-1.5">
       <label
         className={cn(
-          "text-xs font-semibold uppercase tracking-wider text-slate-700 select-none",
+          "text-xs font-semibold text-zinc-700 select-none",
           className
         )}
         {...props}
@@ -30,7 +30,7 @@ export function FormLabel({
         )}
       </label>
       {helperText && (
-        <span className="text-xs text-slate-500 leading-normal">{helperText}</span>
+        <span className="text-[11px] text-zinc-500 leading-normal">{helperText}</span>
       )}
     </div>
   );

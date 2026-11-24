@@ -1,6 +1,6 @@
 import React from "react";
 import Link from "next/link";
-import { ChevronRight, Home } from "lucide-react";
+import { ChevronRight } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 export interface BreadcrumbItem {
@@ -15,16 +15,14 @@ export interface BreadcrumbProps {
 
 export function Breadcrumb({ items, className }: BreadcrumbProps) {
   return (
-    <nav aria-label="Breadcrumb" className={cn("flex items-center text-xs text-slate-500", className)}>
-      <ol className="flex items-center flex-wrap gap-1.5">
+    <nav aria-label="Breadcrumb" className={cn("flex items-center text-xs text-zinc-500", className)}>
+      <ol className="flex items-center flex-wrap gap-1">
         <li>
           <Link
             href="/"
-            className="flex items-center gap-1 hover:text-teal-700 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-600 rounded px-1"
-            aria-label="Dashboard Home"
+            className="hover:text-zinc-900 transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-teal-700 rounded px-1"
           >
-            <Home className="h-3.5 w-3.5 text-slate-400" aria-hidden="true" />
-            <span className="sr-only sm:not-sr-only">Dashboard</span>
+            AccessMate
           </Link>
         </li>
 
@@ -32,11 +30,11 @@ export function Breadcrumb({ items, className }: BreadcrumbProps) {
           const isLast = index === items.length - 1;
 
           return (
-            <li key={item.label} className="flex items-center gap-1.5">
-              <ChevronRight className="h-3 w-3 text-slate-400 shrink-0" aria-hidden="true" />
+            <li key={item.label} className="flex items-center gap-1">
+              <ChevronRight className="h-3 w-3 text-zinc-400 shrink-0" aria-hidden="true" />
               {isLast || !item.href ? (
                 <span
-                  className="font-semibold text-slate-800"
+                  className="font-medium text-zinc-900"
                   aria-current={isLast ? "page" : undefined}
                 >
                   {item.label}
@@ -44,7 +42,7 @@ export function Breadcrumb({ items, className }: BreadcrumbProps) {
               ) : (
                 <Link
                   href={item.href}
-                  className="hover:text-teal-700 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-600 rounded px-1"
+                  className="hover:text-zinc-900 transition-colors focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-teal-700 rounded px-1"
                 >
                   {item.label}
                 </Link>

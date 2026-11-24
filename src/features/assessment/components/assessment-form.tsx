@@ -65,13 +65,13 @@ export function AssessmentForm({
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
       {/* General Building Information */}
-      <div className="rounded-xl border border-slate-200/90 bg-white p-5 shadow-2xs space-y-4">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-slate-100">
+      <div className="rounded-lg border border-zinc-200/90 bg-white p-5 shadow-2xs space-y-4">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-zinc-100">
           <div>
-            <h2 className="text-lg font-bold text-slate-900 tracking-tight">
+            <h2 className="text-lg font-bold text-zinc-900 tracking-tight">
               {isNew ? "Create New Building Assessment" : `Edit Assessment: ${record.general.name}`}
             </h2>
-            <p className="text-xs text-slate-500">
+            <p className="text-xs text-zinc-500">
               Audit verifiable physical parameters, architectural barriers, and evidence quality.
             </p>
           </div>
@@ -840,7 +840,7 @@ export function AssessmentForm({
       )}
 
       {/* Action Footer */}
-      <div className="flex flex-col sm:flex-row items-center justify-between gap-3 pt-4 border-t border-slate-200">
+      <div className="flex flex-col sm:flex-row items-center justify-between gap-3 pt-4 border-t border-zinc-200">
         <div>
           {!isNew && onDelete && !showDeleteConfirm && (
             <Button

@@ -37,9 +37,9 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(
             {label}
           </FormLabel>
         )}
-        <div className="relative rounded-lg shadow-2xs">
+        <div className="relative rounded-md shadow-2xs">
           {leftIcon && (
-            <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3 text-slate-400">
+            <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3 text-zinc-400">
               {leftIcon}
             </div>
           )}
@@ -51,18 +51,18 @@ export const Input = React.forwardRef<HTMLInputElement, InputProps>(
             aria-describedby={error ? errorId : helperId}
             required={required}
             className={cn(
-              "block w-full rounded-lg border bg-white py-2 text-sm text-slate-900 placeholder:text-slate-400 transition-colors focus:outline-none focus:ring-2 focus:ring-offset-1 disabled:cursor-not-allowed disabled:bg-slate-50 disabled:text-slate-500",
-              leftIcon ? "pl-9" : "pl-3.5",
-              rightIcon ? "pr-9" : "pr-3.5",
+              "block w-full rounded-md border bg-white py-1.5 text-sm text-zinc-900 placeholder:text-zinc-400 transition-colors focus:outline-none focus:ring-2 focus:ring-offset-1 disabled:cursor-not-allowed disabled:bg-zinc-50 disabled:text-zinc-500",
+              leftIcon ? "pl-9" : "pl-3",
+              rightIcon ? "pr-9" : "pr-3",
               error
                 ? "border-rose-300 focus:border-rose-500 focus:ring-rose-200"
-                : "border-slate-300 focus:border-teal-600 focus:ring-teal-500/20",
+                : "border-zinc-300 focus:border-teal-700 focus:ring-teal-700/20",
               className
             )}
             {...props}
           />
           {rightIcon && (
-            <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3 text-slate-400">
+            <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3 text-zinc-400">
               {rightIcon}
             </div>
           )}

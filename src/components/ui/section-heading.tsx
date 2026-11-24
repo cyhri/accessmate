@@ -27,13 +27,13 @@ export function SectionHeading({
     >
       <div className="space-y-1">
         <div className="flex flex-wrap items-center gap-2.5">
-          <Component className="text-xl sm:text-2xl font-bold tracking-tight text-slate-900">
+          <Component className="text-xl sm:text-2xl font-bold tracking-tight text-zinc-900">
             {title}
           </Component>
           {badge && <div className="shrink-0">{badge}</div>}
         </div>
         {description && (
-          <p className="text-xs sm:text-sm text-slate-500 leading-relaxed max-w-3xl">
+          <p className="text-xs sm:text-sm text-zinc-500 leading-relaxed max-w-3xl">
             {description}
           </p>
         )}

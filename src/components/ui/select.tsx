@@ -42,7 +42,7 @@ export const Select = React.forwardRef<HTMLSelectElement, SelectProps>(
             {label}
           </FormLabel>
         )}
-        <div className="relative rounded-lg shadow-2xs">
+        <div className="relative rounded-md shadow-2xs">
           <select
             ref={ref}
             id={selectId}
@@ -51,10 +51,10 @@ export const Select = React.forwardRef<HTMLSelectElement, SelectProps>(
             aria-describedby={error ? errorId : helperId}
             required={required}
             className={cn(
-              "block w-full appearance-none rounded-lg border bg-white py-2 pl-3.5 pr-10 text-sm text-slate-900 transition-colors focus:outline-none focus:ring-2 focus:ring-offset-1 disabled:cursor-not-allowed disabled:bg-slate-50 disabled:text-slate-500",
+              "block w-full appearance-none rounded-md border bg-white py-1.5 pl-3 pr-9 text-sm text-zinc-900 transition-colors focus:outline-none focus:ring-2 focus:ring-offset-1 disabled:cursor-not-allowed disabled:bg-zinc-50 disabled:text-zinc-500",
               error
                 ? "border-rose-300 focus:border-rose-500 focus:ring-rose-200"
-                : "border-slate-300 focus:border-teal-600 focus:ring-teal-500/20",
+                : "border-zinc-300 focus:border-teal-700 focus:ring-teal-700/20",
               className
             )}
             {...props}
@@ -65,7 +65,7 @@ export const Select = React.forwardRef<HTMLSelectElement, SelectProps>(
               </option>
             ))}
           </select>
-          <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3 text-slate-400">
+          <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2.5 text-zinc-400">
             <ChevronDown className="h-4 w-4" aria-hidden="true" />
           </div>
         </div>

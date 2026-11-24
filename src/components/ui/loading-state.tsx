@@ -28,20 +28,20 @@ export function LoadingState({
           {Array.from({ length: cardCount }).map((_, index) => (
             <div
               key={index}
-              className="h-36 rounded-xl border border-slate-200 bg-white p-5 space-y-3 animate-pulse"
+              className="h-32 rounded-lg border border-zinc-200 bg-white p-5 space-y-3 animate-pulse"
             >
-              <div className="h-4 w-1/3 rounded bg-slate-200" />
-              <div className="h-3 w-3/4 rounded bg-slate-100" />
-              <div className="h-3 w-1/2 rounded bg-slate-100" />
+              <div className="h-4 w-1/3 rounded bg-zinc-200" />
+              <div className="h-3 w-3/4 rounded bg-zinc-100" />
+              <div className="h-3 w-1/2 rounded bg-zinc-100" />
             </div>
           ))}
         </div>
       ) : (
-        <div className="space-y-2.5">
+        <div className="space-y-2">
           {Array.from({ length: lines }).map((_, index) => (
             <div
               key={index}
-              className="h-4 rounded bg-slate-200 animate-pulse"
+              className="h-3.5 rounded bg-zinc-200 animate-pulse"
               style={{ width: `${Math.max(40, 100 - index * 20)}%` }}
             />
           ))}

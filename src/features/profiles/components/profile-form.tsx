@@ -134,27 +134,27 @@ export function ProfileForm({ initialProfile, onSave, onCancel }: ProfileFormPro
       )}
 
       {/* Profile Header & Persona Preset Bar */}
-      <div className="rounded-xl border border-slate-200/90 bg-white p-5 shadow-2xs space-y-4">
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-slate-100">
+      <div className="rounded-lg border border-zinc-200/90 bg-white p-5 shadow-2xs space-y-4">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-zinc-100">
           <div>
-            <h2 className="text-lg font-bold text-slate-900 tracking-tight">
+            <h2 className="text-lg font-bold text-zinc-900 tracking-tight">
               Edit Accessibility Profile
             </h2>
-            <p className="text-xs text-slate-500">
+            <p className="text-xs text-zinc-500">
               Customize functional mobility limits, sensory tolerances, and assistive communication requirements.
             </p>
           </div>
 
           {/* Quick Persona Preset Selector */}
           <div className="flex items-center gap-2">
-            <span className="text-xs font-medium text-slate-500 shrink-0 hidden sm:inline">
+            <span className="text-xs font-medium text-zinc-500 shrink-0 hidden sm:inline">
               <Bookmark className="h-3.5 w-3.5 inline mr-1 text-teal-600" /> Quick Persona:
             </span>
             <select
               value={selectedPresetId}
               onChange={(e) => handleLoadPreset(e.target.value)}
               aria-label="Load pre-configured accessibility persona preset"
-              className="text-xs rounded-lg border border-slate-300 bg-slate-50 py-1.5 pl-2.5 pr-8 text-slate-700 focus:outline-none focus:ring-2 focus:ring-teal-600 cursor-pointer"
+              className="text-xs rounded-lg border border-zinc-300 bg-zinc-50 py-1.5 pl-2.5 pr-8 text-zinc-700 focus:outline-none focus:ring-2 focus:ring-teal-600 cursor-pointer"
             >
               <option value="">Load Preset Template...</option>
               {PROFILE_PRESETS.map((preset) => (
@@ -230,11 +230,11 @@ export function ProfileForm({ initialProfile, onSave, onCancel }: ProfileFormPro
             />
 
             <div className="space-y-1.5 pt-1">
-              <span className="text-xs font-medium text-slate-700 block">
+              <span className="text-xs font-medium text-zinc-700 block">
                 Functional Mobility Characteristics
               </span>
               <div className="flex flex-wrap gap-2 pt-1">
-                <label className="inline-flex items-center gap-2 text-xs text-slate-700 bg-slate-50 border border-slate-200 px-2.5 py-1.5 rounded-lg cursor-pointer hover:bg-slate-100">
+                <label className="inline-flex items-center gap-2 text-xs text-zinc-700 bg-zinc-50 border border-zinc-200 px-2.5 py-1.5 rounded-lg cursor-pointer hover:bg-zinc-100">
                   <input
                     type="checkbox"
                     checked={profile.mobility.difficultyClimbingStairs}
@@ -247,11 +247,11 @@ export function ProfileForm({ initialProfile, onSave, onCancel }: ProfileFormPro
                         },
                       }))
                     }
-                    className="rounded border-slate-300 text-teal-600 focus:ring-teal-500"
+                    className="rounded border-zinc-300 text-teal-600 focus:ring-teal-500"
                   />
                   Difficulty climbing stairs
                 </label>
-                <label className="inline-flex items-center gap-2 text-xs text-slate-700 bg-slate-50 border border-slate-200 px-2.5 py-1.5 rounded-lg cursor-pointer hover:bg-slate-100">
+                <label className="inline-flex items-center gap-2 text-xs text-zinc-700 bg-zinc-50 border border-zinc-200 px-2.5 py-1.5 rounded-lg cursor-pointer hover:bg-zinc-100">
                   <input
                     type="checkbox"
                     checked={profile.mobility.usesWheelchair}
@@ -264,7 +264,7 @@ export function ProfileForm({ initialProfile, onSave, onCancel }: ProfileFormPro
                         },
                       }))
                     }
-                    className="rounded border-slate-300 text-teal-600 focus:ring-teal-500"
+                    className="rounded border-zinc-300 text-teal-600 focus:ring-teal-500"
                   />
                   Uses wheelchair
                 </label>
@@ -273,8 +273,8 @@ export function ProfileForm({ initialProfile, onSave, onCancel }: ProfileFormPro
           </div>
 
           {/* Requirement Selectors for Environmental Features */}
-          <div className="border-t border-slate-100 pt-3">
-            <h4 className="text-xs font-semibold text-slate-900 uppercase tracking-wider mb-2">
+          <div className="border-t border-zinc-100 pt-3">
+            <h4 className="text-xs font-semibold text-zinc-900 uppercase tracking-wider mb-2">
               Environmental Feature Requirement Levels
             </h4>
             <RequirementSelector
@@ -335,8 +335,8 @@ export function ProfileForm({ initialProfile, onSave, onCancel }: ProfileFormPro
           </div>
 
           {/* Numeric Threshold Constraints */}
-          <div className="border-t border-slate-100 pt-3">
-            <h4 className="text-xs font-semibold text-slate-900 uppercase tracking-wider mb-2">
+          <div className="border-t border-zinc-100 pt-3">
+            <h4 className="text-xs font-semibold text-zinc-900 uppercase tracking-wider mb-2">
               Quantitative Physical Threshold Constraints
             </h4>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
@@ -451,8 +451,8 @@ export function ProfileForm({ initialProfile, onSave, onCancel }: ProfileFormPro
         defaultOpen={true}
       >
         <div className="space-y-4">
-          <div className="flex flex-wrap gap-3 pb-2 border-b border-slate-100">
-            <label className="inline-flex items-center gap-2 text-xs text-slate-700 bg-slate-50 border border-slate-200 px-3 py-1.5 rounded-lg cursor-pointer hover:bg-slate-100">
+          <div className="flex flex-wrap gap-3 pb-2 border-b border-zinc-100">
+            <label className="inline-flex items-center gap-2 text-xs text-zinc-700 bg-zinc-50 border border-zinc-200 px-3 py-1.5 rounded-lg cursor-pointer hover:bg-zinc-100">
               <input
                 type="checkbox"
                 checked={profile.vision.hasLowVision}
@@ -462,11 +462,11 @@ export function ProfileForm({ initialProfile, onSave, onCancel }: ProfileFormPro
                     vision: { ...prev.vision, hasLowVision: e.target.checked },
                   }))
                 }
-                className="rounded border-slate-300 text-teal-600 focus:ring-teal-500"
+                className="rounded border-zinc-300 text-teal-600 focus:ring-teal-500"
               />
               Has Low Vision / Partial Sight
             </label>
-            <label className="inline-flex items-center gap-2 text-xs text-slate-700 bg-slate-50 border border-slate-200 px-3 py-1.5 rounded-lg cursor-pointer hover:bg-slate-100">
+            <label className="inline-flex items-center gap-2 text-xs text-zinc-700 bg-zinc-50 border border-zinc-200 px-3 py-1.5 rounded-lg cursor-pointer hover:bg-zinc-100">
               <input
                 type="checkbox"
                 checked={profile.vision.hasBlindness}
@@ -476,7 +476,7 @@ export function ProfileForm({ initialProfile, onSave, onCancel }: ProfileFormPro
                     vision: { ...prev.vision, hasBlindness: e.target.checked },
                   }))
                 }
-                className="rounded border-slate-300 text-teal-600 focus:ring-teal-500"
+                className="rounded border-zinc-300 text-teal-600 focus:ring-teal-500"
               />
               Blind / Non-Visual Traveler
             </label>
@@ -559,8 +559,8 @@ export function ProfileForm({ initialProfile, onSave, onCancel }: ProfileFormPro
         defaultOpen={false}
       >
         <div className="space-y-4">
-          <div className="pb-2 border-b border-slate-100">
-            <label className="inline-flex items-center gap-2 text-xs text-slate-700 bg-slate-50 border border-slate-200 px-3 py-1.5 rounded-lg cursor-pointer hover:bg-slate-100">
+          <div className="pb-2 border-b border-zinc-100">
+            <label className="inline-flex items-center gap-2 text-xs text-zinc-700 bg-zinc-50 border border-zinc-200 px-3 py-1.5 rounded-lg cursor-pointer hover:bg-zinc-100">
               <input
                 type="checkbox"
                 checked={profile.hearing.isDeafOrHardOfHearing}
@@ -573,7 +573,7 @@ export function ProfileForm({ initialProfile, onSave, onCancel }: ProfileFormPro
                     },
                   }))
                 }
-                className="rounded border-slate-300 text-teal-600 focus:ring-teal-500"
+                className="rounded border-zinc-300 text-teal-600 focus:ring-teal-500"
               />
               Deaf or Hard-of-Hearing Traveler
             </label>
@@ -689,7 +689,7 @@ export function ProfileForm({ initialProfile, onSave, onCancel }: ProfileFormPro
         defaultOpen={profile.temporary.hasTemporaryLimitation}
       >
         <div className="space-y-4">
-          <div className="flex items-center gap-2 pb-2 border-b border-slate-100">
+          <div className="flex items-center gap-2 pb-2 border-b border-zinc-100">
             <input
               type="checkbox"
               id="hasTemporaryLimitation"
@@ -703,18 +703,18 @@ export function ProfileForm({ initialProfile, onSave, onCancel }: ProfileFormPro
                   },
                 }))
               }
-              className="h-4 w-4 rounded border-slate-300 text-teal-600 focus:ring-teal-500"
+              className="h-4 w-4 rounded border-zinc-300 text-teal-600 focus:ring-teal-500"
             />
             <label
               htmlFor="hasTemporaryLimitation"
-              className="text-sm font-semibold text-slate-800 cursor-pointer"
+              className="text-sm font-semibold text-zinc-800 cursor-pointer"
             >
               Activate Temporary Limitation Overlay
             </label>
           </div>
 
           {profile.temporary.hasTemporaryLimitation && (
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 bg-amber-50/50 p-4 rounded-xl border border-amber-200/80">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 bg-amber-50/50 p-4 rounded-lg border border-amber-200/80">
               <div className="sm:col-span-2">
                 <Input
                   label="Description of Temporary Limitation"
@@ -750,7 +750,7 @@ export function ProfileForm({ initialProfile, onSave, onCancel }: ProfileFormPro
               />
 
               <div className="flex flex-col gap-2 pt-2">
-                <label className="inline-flex items-center gap-2 text-xs text-slate-700 cursor-pointer">
+                <label className="inline-flex items-center gap-2 text-xs text-zinc-700 cursor-pointer">
                   <input
                     type="checkbox"
                     checked={profile.temporary.temporaryUseOfCrutches}
@@ -763,11 +763,11 @@ export function ProfileForm({ initialProfile, onSave, onCancel }: ProfileFormPro
                         },
                       }))
                     }
-                    className="rounded border-slate-300 text-teal-600"
+                    className="rounded border-zinc-300 text-teal-600"
                   />
                   Temporary use of crutches or cane
                 </label>
-                <label className="inline-flex items-center gap-2 text-xs text-slate-700 cursor-pointer">
+                <label className="inline-flex items-center gap-2 text-xs text-zinc-700 cursor-pointer">
                   <input
                     type="checkbox"
                     checked={profile.temporary.difficultyUsingStairs}
@@ -780,7 +780,7 @@ export function ProfileForm({ initialProfile, onSave, onCancel }: ProfileFormPro
                         },
                       }))
                     }
-                    className="rounded border-slate-300 text-teal-600"
+                    className="rounded border-zinc-300 text-teal-600"
                   />
                   Temporarily cannot climb stairs
                 </label>
@@ -791,7 +791,7 @@ export function ProfileForm({ initialProfile, onSave, onCancel }: ProfileFormPro
       </CollapsibleSection>
 
       {/* Action Footer */}
-      <div className="flex flex-col sm:flex-row items-center justify-between gap-3 pt-4 border-t border-slate-200">
+      <div className="flex flex-col sm:flex-row items-center justify-between gap-3 pt-4 border-t border-zinc-200">
         <Button
           type="button"
           variant="ghost"

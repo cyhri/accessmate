@@ -26,27 +26,27 @@ export const Button = React.forwardRef<HTMLButtonElement, ButtonProps>(
     ref
   ) => {
     const baseStyles =
-      "inline-flex items-center justify-center font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:opacity-50 disabled:pointer-events-none rounded-lg cursor-pointer select-none";
+      "inline-flex items-center justify-center font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 disabled:opacity-50 disabled:pointer-events-none rounded-md cursor-pointer select-none";
 
     const variantStyles = {
       primary:
-        "bg-teal-600 text-white hover:bg-teal-700 active:bg-teal-800 shadow-xs focus-visible:ring-teal-600 focus-visible:ring-offset-slate-50",
+        "bg-teal-700 text-white hover:bg-teal-800 active:bg-teal-900 shadow-2xs focus-visible:ring-teal-700 focus-visible:ring-offset-zinc-50",
       navy:
-        "bg-slate-900 text-white hover:bg-slate-800 active:bg-slate-950 shadow-xs focus-visible:ring-slate-900 focus-visible:ring-offset-slate-50",
+        "bg-zinc-900 text-white hover:bg-zinc-800 active:bg-zinc-950 shadow-2xs focus-visible:ring-zinc-900 focus-visible:ring-offset-zinc-50",
       secondary:
-        "bg-slate-100 text-slate-800 hover:bg-slate-200 active:bg-slate-300 focus-visible:ring-slate-400 focus-visible:ring-offset-slate-50",
+        "bg-zinc-100 text-zinc-800 hover:bg-zinc-200 active:bg-zinc-300 focus-visible:ring-zinc-400 focus-visible:ring-offset-zinc-50",
       outline:
-        "border border-slate-300 bg-white hover:bg-slate-50 text-slate-700 active:bg-slate-100 focus-visible:ring-teal-600 focus-visible:ring-offset-slate-50 shadow-xs",
+        "border border-zinc-300 bg-white hover:bg-zinc-50 text-zinc-800 active:bg-zinc-100 focus-visible:ring-teal-700 focus-visible:ring-offset-zinc-50 shadow-2xs",
       ghost:
-        "bg-transparent hover:bg-slate-100 text-slate-700 active:bg-slate-200 focus-visible:ring-teal-600",
+        "bg-transparent hover:bg-zinc-100 text-zinc-700 active:bg-zinc-200 focus-visible:ring-teal-700",
       mint:
-        "bg-teal-50 text-teal-800 border border-teal-200 hover:bg-teal-100 active:bg-teal-200/80 focus-visible:ring-teal-600",
+        "bg-teal-50 text-teal-800 border border-teal-200 hover:bg-teal-100 active:bg-teal-200/80 focus-visible:ring-teal-700",
     }[variant];
 
     const sizeStyles = {
       sm: "h-8 px-3 text-xs gap-1.5",
-      md: "h-10 px-4 text-sm gap-2",
-      lg: "h-11 px-5 text-base gap-2.5",
+      md: "h-9 px-4 text-sm gap-2",
+      lg: "h-10 px-5 text-base gap-2.5",
     }[size];
 
     return (

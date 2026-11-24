@@ -1,6 +1,7 @@
 "use client";
 
 import React from "react";
+import { motion } from "framer-motion";
 import { cn } from "@/lib/utils";
 import type { RequirementLevel } from "@/constants";
 
@@ -14,7 +15,7 @@ export interface RequirementSelectorProps {
 }
 
 export function RequirementSelector({
-  id,
+  id = "selector",
   label,
   description,
   value,
@@ -24,44 +25,40 @@ export function RequirementSelector({
   const options: {
     readonly level: RequirementLevel;
     readonly title: string;
-    readonly badge: string;
-    readonly activeClass: string;
+    readonly activeTextColor: string;
   }[] = [
     {
       level: "not_required",
       title: "Not Needed",
-      badge: "Irrelevant",
-      activeClass: "bg-slate-100 text-slate-800 border-slate-300 font-semibold shadow-2xs",
+      activeTextColor: "text-zinc-700",
     },
     {
       level: "preferred",
       title: "Preferred",
-      badge: "Nice-to-have",
-      activeClass: "bg-amber-50 text-amber-900 border-amber-300 font-semibold shadow-2xs ring-1 ring-amber-300",
+      activeTextColor: "text-amber-800",
     },
     {
       level: "essential",
       title: "Essential",
-      badge: "Must-have Blocker",
-      activeClass: "bg-teal-600 text-white border-teal-700 font-semibold shadow-2xs ring-1 ring-teal-600",
+      activeTextColor: "text-teal-900 font-semibold",
     },
   ];
 
   return (
-    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5 py-2.5 border-b border-slate-100 last:border-b-0">
+    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 py-3 px-4 border-b border-black/[0.04] last:border-b-0 hover:bg-black/[0.01] transition-colors">
       <div className="space-y-0.5 max-w-md">
-        <label htmlFor={id} className="text-sm font-medium text-slate-800 leading-snug">
+        <label htmlFor={id} className="text-xs font-semibold text-[#111110] leading-snug block">
           {label}
         </label>
         {description && (
-          <p className="text-xs text-slate-500 leading-normal">{description}</p>
+          <p className="text-[11px] text-zinc-500 leading-normal">{description}</p>
         )}
       </div>
 
       <div
         role="radiogroup"
         aria-label={`${label} requirement level`}
-        className="inline-flex rounded-lg border border-slate-200 bg-slate-50/80 p-0.5 shrink-0"
+        className="relative inline-flex rounded-full bg-zinc-100 p-0.5 shrink-0"
       >
         {options.map((opt) => {
           const isSelected = value === opt.level;
@@ -74,12 +71,19 @@ export function RequirementSelector({
               disabled={disabled}
               onClick={() => onChange(opt.level)}
               className={cn(
-                "px-3 py-1.5 text-xs rounded-md border border-transparent transition-all cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-teal-600 select-none",
+                "relative px-3 py-1 text-xs rounded-full transition-colors cursor-pointer focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-black select-none z-10",
                 isSelected
-                  ? opt.activeClass
-                  : "text-slate-600 hover:text-slate-900 hover:bg-white/60"
+                  ? opt.activeTextColor
+                  : "text-zinc-500 hover:text-zinc-900"
               )}
             >
+              {isSelected && (
+                <motion.div
+                  layoutId={`req-${id}-active`}
+                  className="absolute inset-0 rounded-full bg-white shadow-2xs border border-black/[0.04] -z-10"
+                  transition={{ type: "spring", stiffness: 450, damping: 35 }}
+                />
+              )}
               <span>{opt.title}</span>
             </button>
           );

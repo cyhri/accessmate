@@ -2,42 +2,44 @@
 @import "leaflet/dist/leaflet.css";
 
 :root {
-  /* Light SaaS Color Palette */
-  --background: #f8fafc;
-  --foreground: #0f172a;
-  
-  --card: #ffffff;
-  --card-foreground: #0f172a;
-  
-  /* Deep Navy */
-  --navy: #0f172a;
-  --navy-muted: #1e293b;
-  --navy-surface: #1e293b;
-  --navy-foreground: #f8fafc;
+  /* Apple & Linear Inspired Palette */
+  --background: #fbfbfa;
+  --foreground: #111110;
 
-  /* Teal Accent */
+  --card: #ffffff;
+  --card-foreground: #111110;
+
+  /* Restrained Navigation & Accents */
+  --surface-subtle: #f5f5f4;
+  --surface-hover: #ebebea;
+  
   --teal: #0d9488;
   --teal-hover: #0f766e;
-  --teal-active: #115e59;
-  --teal-light: #14b8a6;
   --teal-subtle: #f0fdfa;
   --teal-border: #ccfbf1;
   --teal-foreground: #ffffff;
 
-  /* Neutrals */
-  --muted: #f1f5f9;
-  --muted-foreground: #64748b;
-  --border: #e2e8f0;
-  --border-subtle: #f1f5f9;
+  /* Hairline Borders & Dividers */
+  --border: rgba(0, 0, 0, 0.07);
+  --border-subtle: rgba(0, 0, 0, 0.04);
   --ring: #0d9488;
 
-  /* Semantic State */
+  /* Status Colors */
   --success: #059669;
   --success-subtle: #ecfdf5;
   --warning: #d97706;
   --warning-subtle: #fffbeb;
   --error: #e11d48;
   --error-subtle: #fff1f2;
+
+  /* Font Stacks */
+  --font-sans: var(--font-sans), -apple-system, BlinkMacSystemFont, "SF Pro Text", system-ui, sans-serif;
+  --font-display: var(--font-display), var(--font-sans), -apple-system, BlinkMacSystemFont, "SF Pro Display", system-ui, sans-serif;
+  --font-mono: var(--font-mono), "SF Mono", Menlo, Monaco, Consolas, monospace;
+
+  /* Motion Easings */
+  --ease-spring: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-smooth: cubic-bezier(0.25, 0.1, 0.25, 1);
 }
 
 @theme inline {
@@ -45,26 +47,23 @@
   --color-foreground: var(--foreground);
   --color-card: var(--card);
   --color-card-foreground: var(--card-foreground);
-  --color-navy: var(--navy);
-  --color-navy-muted: var(--navy-muted);
-  --color-navy-surface: var(--navy-surface);
-  --color-navy-foreground: var(--navy-foreground);
   --color-teal: var(--teal);
   --color-teal-hover: var(--teal-hover);
-  --color-teal-active: var(--teal-active);
-  --color-teal-light: var(--teal-light);
   --color-teal-subtle: var(--teal-subtle);
   --color-teal-border: var(--teal-border);
-  --color-teal-foreground: var(--teal-foreground);
-  --color-muted: var(--muted);
-  --color-muted-foreground: var(--muted-foreground);
   --color-border: var(--border);
   --color-ring: var(--ring);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --font-sans: var(--font-sans);
+  --font-display: var(--font-display);
+  --font-mono: var(--font-mono);
 }
 
-/* Accessibility & Global Defaults */
+.font-display {
+  font-family: var(--font-display);
+  letter-spacing: -0.02em;
+}
+
+/* Accessibility & Smooth Scrolling */
 html {
   scroll-behavior: smooth;
   text-rendering: optimizeLegibility;
@@ -76,7 +75,7 @@ html {
   html {
     scroll-behavior: auto;
   }
-  
+
   *,
   *::before,
   *::after {
@@ -90,34 +89,36 @@ html {
 body {
   background-color: var(--background);
   color: var(--foreground);
-  font-family: var(--font-geist-sans), -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  font-family: var(--font-sans);
   min-height: 100vh;
   margin: 0;
   display: flex;
   flex-direction: column;
 }
 
-/* High-contrast focus indicators for accessibility */
-:focus-visible {
+/* High-contrast focus indicators */
+*:focus-visible {
   outline: 2px solid var(--ring);
   outline-offset: 2px;
 }
 
-/* Scrollbar styling for accessible web experience */
-::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
+/* Tabular figures for measurements and numbers */
+.tabular-nums {
+  font-variant-numeric: tabular-nums;
 }
 
-::-webkit-scrollbar-track {
-  background: #f1f5f9;
+/* Apple-style ultra-subtle glass material */
+.glass-panel {
+  background: rgba(255, 255, 255, 0.82);
+  backdrop-filter: blur(20px) saturate(180%);
+  -webkit-backdrop-filter: blur(20px) saturate(180%);
+  border: 1px solid rgba(0, 0, 0, 0.07);
 }
 
-::-webkit-scrollbar-thumb {
-  background: #cbd5e1;
-  border-radius: 4px;
-}
-
-::-webkit-scrollbar-thumb:hover {
-  background: #94a3b8;
+/* Inset grouped styling for Apple-style lists */
+.inset-grouped {
+  background: #ffffff;
+  border-radius: 1rem;
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.02);
 }

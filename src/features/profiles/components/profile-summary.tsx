@@ -7,14 +7,9 @@ import {
   Sliders,
   Eye,
   Volume2,
-  Sparkles,
-  Clock,
-  CheckCircle2,
-  AlertTriangle,
+  Activity,
 } from "lucide-react";
 import type { UserAccessibilityProfile } from "@/types/profile";
-import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { formatDate } from "@/lib/utils";
 
@@ -75,309 +70,266 @@ export function ProfileSummary({ profile, onEdit }: ProfileSummaryProps) {
       .join(" ");
   };
 
+  const renderBadge = (level: string) => {
+    if (level === "essential") {
+      return (
+        <span className="text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded-full bg-teal-50 text-teal-800 border border-teal-200/60">
+          Essential
+        </span>
+      );
+    }
+    if (level === "preferred") {
+      return (
+        <span className="text-[10px] uppercase font-bold tracking-wider px-2 py-0.5 rounded-full bg-amber-50 text-amber-800 border border-amber-200/60">
+          Preferred
+        </span>
+      );
+    }
+    return (
+      <span className="text-[11px] text-zinc-400">Not needed</span>
+    );
+  };
+
   return (
     <div className="space-y-6">
-      {/* Top Banner Card */}
-      <Card variant="default" className="border-teal-200/80 bg-linear-to-r from-teal-50/50 via-white to-slate-50">
-        <CardHeader className="pb-4">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-            <div className="flex items-start gap-3.5">
-              <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-teal-600 text-white shadow-xs">
-                <UserCheck className="h-6 w-6" aria-hidden="true" />
-              </div>
-              <div className="space-y-1">
-                <div className="flex flex-wrap items-center gap-2">
-                  <CardTitle className="text-xl font-bold text-slate-900 tracking-tight">
-                    {profile.name}
-                  </CardTitle>
-                  <Badge variant="teal" size="sm">
-                    {profile.preferredCategory}
+      {/* Apple Settings / Health Profile Header */}
+      <div className="rounded-2xl border border-black/[0.06] bg-white p-5 shadow-xs space-y-4">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div className="flex items-center gap-3.5">
+            <div className="h-12 w-12 rounded-2xl bg-teal-50 border border-teal-200/60 text-teal-800 flex items-center justify-center font-bold text-base shadow-xs shrink-0">
+              <UserCheck className="h-6 w-6" />
+            </div>
+            <div>
+              <div className="flex flex-wrap items-center gap-2">
+                <h2 className="text-xl font-bold tracking-tight text-[#111110] font-display">
+                  {profile.name}
+                </h2>
+                <Badge variant="teal" size="sm">
+                  {profile.preferredCategory.replace(/_/g, " ")}
+                </Badge>
+                {profile.isDefault && (
+                  <Badge variant="navy" size="sm">
+                    Default
                   </Badge>
-                  {profile.isDefault && (
-                    <Badge variant="navy" size="sm">
-                      Active Default
-                    </Badge>
-                  )}
-                </div>
-                <CardDescription className="text-xs text-slate-500">
-                  Last updated {formatDate(profile.updatedAt)} &bull; ID: {profile.id}
-                </CardDescription>
+                )}
               </div>
-            </div>
-
-            <Button
-              variant="primary"
-              size="sm"
-              onClick={onEdit}
-              leftIcon={<Edit3 className="h-4 w-4" />}
-            >
-              Edit Profile
-            </Button>
-          </div>
-        </CardHeader>
-
-        <CardContent className="pt-0">
-          {profile.notes && (
-            <p className="text-xs text-slate-600 bg-white/80 p-3 rounded-lg border border-slate-200/80 mb-4 italic">
-              &ldquo;{profile.notes}&rdquo;
-            </p>
-          )}
-
-          {/* Quick Metrics Bar */}
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-1">
-            <div className="rounded-lg bg-white border border-slate-200 p-3 text-center">
-              <div className="text-xs text-slate-500 font-medium">Primary Aid</div>
-              <div className="text-sm font-semibold text-slate-900 mt-0.5">
-                {formatAidLabel(profile.mobility.primaryAid)}
-              </div>
-            </div>
-
-            <div className="rounded-lg bg-teal-50/70 border border-teal-200 p-3 text-center">
-              <div className="text-xs text-teal-700 font-medium flex items-center justify-center gap-1">
-                <AlertTriangle className="h-3 w-3" /> Essential Blockers
-              </div>
-              <div className="text-lg font-bold text-teal-900 mt-0.5">
-                {essential}
-              </div>
-            </div>
-
-            <div className="rounded-lg bg-amber-50/70 border border-amber-200 p-3 text-center">
-              <div className="text-xs text-amber-700 font-medium flex items-center justify-center gap-1">
-                <CheckCircle2 className="h-3 w-3" /> Preferred Needs
-              </div>
-              <div className="text-lg font-bold text-amber-900 mt-0.5">
-                {preferred}
-              </div>
-            </div>
-
-            <div className="rounded-lg bg-white border border-slate-200 p-3 text-center">
-              <div className="text-xs text-slate-500 font-medium">Temporary Limit</div>
-              <div className="text-sm font-semibold text-slate-900 mt-0.5">
-                {profile.temporary.hasTemporaryLimitation ? "Active" : "None"}
-              </div>
+              <p className="text-xs text-zinc-400 mt-0.5">
+                Updated {formatDate(profile.updatedAt)} &bull; Criteria identifier: <span className="font-mono">{profile.id}</span>
+              </p>
             </div>
           </div>
-        </CardContent>
-      </Card>
 
-      {/* Domain Breakdown Grid */}
+          <button
+            type="button"
+            onClick={onEdit}
+            className="flex items-center gap-1.5 px-4 py-2 rounded-full bg-[#111110] text-white text-xs font-semibold hover:bg-zinc-800 active:scale-95 transition-all shadow-xs cursor-pointer"
+          >
+            <Edit3 className="h-3.5 w-3.5" />
+            <span>Edit Profile</span>
+          </button>
+        </div>
+
+        {profile.notes && (
+          <p className="text-xs text-zinc-600 bg-zinc-50 p-3 rounded-xl border border-black/[0.04]">
+            &ldquo;{profile.notes}&rdquo;
+          </p>
+        )}
+
+        {/* Quick Summary Insets */}
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 pt-1">
+          <div className="p-3 rounded-xl bg-zinc-50/80 border border-black/[0.04] text-center">
+            <span className="text-[10px] uppercase font-semibold text-zinc-400 tracking-wider block">
+              Primary Aid
+            </span>
+            <span className="text-sm font-bold text-[#111110] mt-0.5 block truncate">
+              {formatAidLabel(profile.mobility.primaryAid)}
+            </span>
+          </div>
+
+          <div className="p-3 rounded-xl bg-teal-50/60 border border-teal-200/50 text-center">
+            <span className="text-[10px] uppercase font-semibold text-teal-800 tracking-wider block">
+              Essential
+            </span>
+            <span className="text-base font-bold text-teal-900 font-mono tabular-nums mt-0.5 block">
+              {essential}
+            </span>
+          </div>
+
+          <div className="p-3 rounded-xl bg-amber-50/60 border border-amber-200/50 text-center">
+            <span className="text-[10px] uppercase font-semibold text-amber-800 tracking-wider block">
+              Preferred
+            </span>
+            <span className="text-base font-bold text-amber-900 font-mono tabular-nums mt-0.5 block">
+              {preferred}
+            </span>
+          </div>
+
+          <div className="p-3 rounded-xl bg-zinc-50/80 border border-black/[0.04] text-center">
+            <span className="text-[10px] uppercase font-semibold text-zinc-400 tracking-wider block">
+              Temporary
+            </span>
+            <span className="text-sm font-bold text-[#111110] mt-0.5 block">
+              {profile.temporary.hasTemporaryLimitation ? "Active" : "None"}
+            </span>
+          </div>
+        </div>
+      </div>
+
+      {/* Domain Breakdown in Apple Settings Grouped Insets */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-        {/* Mobility Constraints */}
-        <Card variant="subtle">
-          <CardHeader className="pb-3">
-            <div className="flex items-center gap-2 text-teal-700 mb-0.5">
-              <Sliders className="h-4 w-4" aria-hidden="true" />
-              <CardTitle className="text-sm">Mobility &amp; Physical Ingress</CardTitle>
-            </div>
-            <CardDescription className="text-xs">
-              Physical boundary thresholds and movement aids.
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="text-xs space-y-2">
-            <div className="flex justify-between py-1 border-b border-slate-200/60">
-              <span className="text-slate-500">Step-free access</span>
-              <span className="font-medium text-slate-900 capitalize">
-                {profile.mobility.requiresStepFreeAccess.replace("_", " ")}
-              </span>
-            </div>
-            <div className="flex justify-between py-1 border-b border-slate-200/60">
-              <span className="text-slate-500">Elevator for multi-level</span>
-              <span className="font-medium text-slate-900 capitalize">
-                {profile.mobility.requiresElevatorForLevels.replace("_", " ")}
-              </span>
-            </div>
-            <div className="flex justify-between py-1 border-b border-slate-200/60">
-              <span className="text-slate-500">Handrails on stairs</span>
-              <span className="font-medium text-slate-900 capitalize">
-                {profile.mobility.requiresHandrails.replace("_", " ")}
-              </span>
-            </div>
-            <div className="flex justify-between py-1 border-b border-slate-200/60">
-              <span className="text-slate-500">Accessible restroom</span>
-              <span className="font-medium text-slate-900 capitalize">
-                {profile.mobility.requiresAccessibleRestroom.replace("_", " ")}
-              </span>
-            </div>
+        {/* 1. Mobility Constraints */}
+        <div className="rounded-2xl border border-black/[0.06] bg-white overflow-hidden shadow-xs">
+          <div className="p-4 border-b border-black/[0.04] bg-zinc-50/60 flex items-center gap-2">
+            <Sliders className="h-4 w-4 text-teal-600" />
+            <h3 className="text-xs font-bold uppercase tracking-wider text-zinc-700">
+              Mobility &amp; Access Ingress
+            </h3>
+          </div>
 
-            {/* Threshold specifications */}
-            <div className="pt-2">
-              <div className="font-semibold text-slate-800 text-[11px] uppercase tracking-wider mb-1.5">
-                Physical Tolerance Thresholds
-              </div>
-              <div className="grid grid-cols-2 gap-2 text-[11px]">
-                <div className="bg-white p-2 rounded border border-slate-200">
-                  <span className="text-slate-400 block">Max Step Height</span>
-                  <span className="font-semibold text-slate-800">
-                    {profile.mobility.maxStepHeightCm !== null
-                      ? `${profile.mobility.maxStepHeightCm} cm`
-                      : "Unconstrained"}
-                  </span>
-                </div>
-                <div className="bg-white p-2 rounded border border-slate-200">
-                  <span className="text-slate-400 block">Max Ramp Slope</span>
-                  <span className="font-semibold text-slate-800">
-                    {profile.mobility.maxRampSlopePercent !== null
-                      ? `${profile.mobility.maxRampSlopePercent}%`
-                      : "Unconstrained"}
-                  </span>
-                </div>
-                <div className="bg-white p-2 rounded border border-slate-200">
-                  <span className="text-slate-400 block">Min Doorway Width</span>
-                  <span className="font-semibold text-slate-800">
-                    {profile.mobility.minDoorwayWidthCm !== null
-                      ? `${profile.mobility.minDoorwayWidthCm} cm`
-                      : "Standard"}
-                  </span>
-                </div>
-                <div className="bg-white p-2 rounded border border-slate-200">
-                  <span className="text-slate-400 block">Max Continuous Walk</span>
-                  <span className="font-semibold text-slate-800">
-                    {profile.mobility.maxWalkingDistanceMeters !== null
-                      ? `${profile.mobility.maxWalkingDistanceMeters} m`
-                      : "Unlimited"}
-                  </span>
-                </div>
-              </div>
+          <div className="divide-y divide-black/[0.04] text-xs">
+            <div className="p-3.5 flex items-center justify-between">
+              <span className="text-zinc-600">Step-free entrance</span>
+              {renderBadge(profile.mobility.requiresStepFreeAccess)}
             </div>
-          </CardContent>
-        </Card>
+            <div className="p-3.5 flex items-center justify-between">
+              <span className="text-zinc-600">Elevator for upper floors</span>
+              {renderBadge(profile.mobility.requiresElevatorForLevels)}
+            </div>
+            <div className="p-3.5 flex items-center justify-between">
+              <span className="text-zinc-600">Continuous handrails</span>
+              {renderBadge(profile.mobility.requiresHandrails)}
+            </div>
+            <div className="p-3.5 flex items-center justify-between">
+              <span className="text-zinc-600">Accessible restroom</span>
+              {renderBadge(profile.mobility.requiresAccessibleRestroom)}
+            </div>
+            <div className="p-3.5 flex items-center justify-between">
+              <span className="text-zinc-600">Max step tolerance</span>
+              <span className="font-mono font-semibold text-[#111110] tabular-nums">
+                {profile.mobility.maxStepHeightCm !== null ? `${profile.mobility.maxStepHeightCm} cm` : "0 cm"}
+              </span>
+            </div>
+            <div className="p-3.5 flex items-center justify-between">
+              <span className="text-zinc-600">Min door width</span>
+              <span className="font-mono font-semibold text-[#111110] tabular-nums">
+                {profile.mobility.minDoorwayWidthCm !== null ? `${profile.mobility.minDoorwayWidthCm} cm` : "80 cm"}
+              </span>
+            </div>
+            <div className="p-3.5 flex items-center justify-between">
+              <span className="text-zinc-600">Max ramp slope</span>
+              <span className="font-mono font-semibold text-[#111110] tabular-nums">
+                {profile.mobility.maxRampSlopePercent !== null ? `${profile.mobility.maxRampSlopePercent}%` : "6%"}
+              </span>
+            </div>
+          </div>
+        </div>
 
-        {/* Sensory & Vision */}
-        <Card variant="subtle">
-          <CardHeader className="pb-3">
-            <div className="flex items-center gap-2 text-teal-700 mb-0.5">
-              <Eye className="h-4 w-4" aria-hidden="true" />
-              <CardTitle className="text-sm">Vision &amp; Sensory Wayfinding</CardTitle>
-            </div>
-            <CardDescription className="text-xs">
-              Sensory thresholds, contrast indicators, and audio/tactile cues.
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="text-xs space-y-2">
-            <div className="flex justify-between py-1 border-b border-slate-200/60">
-              <span className="text-slate-500">Tactile ground paving</span>
-              <span className="font-medium text-slate-900 capitalize">
-                {profile.vision.requiresTactileGroundPaving.replace("_", " ")}
-              </span>
-            </div>
-            <div className="flex justify-between py-1 border-b border-slate-200/60">
-              <span className="text-slate-500">Audio wayfinding guidance</span>
-              <span className="font-medium text-slate-900 capitalize">
-                {profile.vision.requiresAudioGuidance.replace("_", " ")}
-              </span>
-            </div>
-            <div className="flex justify-between py-1 border-b border-slate-200/60">
-              <span className="text-slate-500">High-contrast signage</span>
-              <span className="font-medium text-slate-900 capitalize">
-                {profile.vision.requiresHighContrastSignage.replace("_", " ")}
-              </span>
-            </div>
-            <div className="flex justify-between py-1 border-b border-slate-200/60">
-              <span className="text-slate-500">Braille signage</span>
-              <span className="font-medium text-slate-900 capitalize">
-                {profile.vision.requiresBrailleSignage.replace("_", " ")}
-              </span>
-            </div>
-            <div className="flex justify-between py-1 border-b border-slate-200/60">
-              <span className="text-slate-500">Quieter environments</span>
-              <span className="font-medium text-slate-900 capitalize">
-                {profile.sensory.prefersQuieterEnvironments.replace("_", " ")}
-              </span>
-            </div>
-            <div className="flex justify-between py-1 border-b border-slate-200/60">
-              <span className="text-slate-500">Predictable wayfinding</span>
-              <span className="font-medium text-slate-900 capitalize">
-                {profile.sensory.requiresPredictableWayfinding.replace("_", " ")}
-              </span>
-            </div>
-          </CardContent>
-        </Card>
+        {/* 2. Vision & Sensory Wayfinding */}
+        <div className="rounded-2xl border border-black/[0.06] bg-white overflow-hidden shadow-xs">
+          <div className="p-4 border-b border-black/[0.04] bg-zinc-50/60 flex items-center gap-2">
+            <Eye className="h-4 w-4 text-teal-600" />
+            <h3 className="text-xs font-bold uppercase tracking-wider text-zinc-700">
+              Vision &amp; Sensory Guidance
+            </h3>
+          </div>
 
-        {/* Hearing & Communication */}
-        <Card variant="subtle">
-          <CardHeader className="pb-3">
-            <div className="flex items-center gap-2 text-teal-700 mb-0.5">
-              <Volume2 className="h-4 w-4" aria-hidden="true" />
-              <CardTitle className="text-sm">Hearing &amp; Communication</CardTitle>
+          <div className="divide-y divide-black/[0.04] text-xs">
+            <div className="p-3.5 flex items-center justify-between">
+              <span className="text-zinc-600">Tactile paving</span>
+              {renderBadge(profile.vision.requiresTactileGroundPaving)}
             </div>
-            <CardDescription className="text-xs">
-              Visual emergency alerts and assistive listening infrastructure.
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="text-xs space-y-2">
-            <div className="flex justify-between py-1 border-b border-slate-200/60">
-              <span className="text-slate-500">Visual announcements &amp; displays</span>
-              <span className="font-medium text-slate-900 capitalize">
-                {profile.hearing.requiresVisualAnnouncements.replace("_", " ")}
-              </span>
+            <div className="p-3.5 flex items-center justify-between">
+              <span className="text-zinc-600">Audio wayfinding</span>
+              {renderBadge(profile.vision.requiresAudioGuidance)}
             </div>
-            <div className="flex justify-between py-1 border-b border-slate-200/60">
-              <span className="text-slate-500">Visual emergency strobe alerts</span>
-              <span className="font-medium text-slate-900 capitalize">
-                {profile.hearing.requiresVisualEmergencyAlerts.replace("_", " ")}
-              </span>
+            <div className="p-3.5 flex items-center justify-between">
+              <span className="text-zinc-600">High-contrast signs</span>
+              {renderBadge(profile.vision.requiresHighContrastSignage)}
             </div>
-            <div className="flex justify-between py-1 border-b border-slate-200/60">
-              <span className="text-slate-500">Written instructions &amp; captions</span>
-              <span className="font-medium text-slate-900 capitalize">
-                {profile.hearing.requiresWrittenInstructions.replace("_", " ")}
-              </span>
+            <div className="p-3.5 flex items-center justify-between">
+              <span className="text-zinc-600">Braille signage</span>
+              {renderBadge(profile.vision.requiresBrailleSignage)}
             </div>
-            <div className="flex justify-between py-1 border-b border-slate-200/60">
-              <span className="text-slate-500">Hearing induction loop (T-coil)</span>
-              <span className="font-medium text-slate-900 capitalize">
-                {profile.hearing.requiresHearingLoop.replace("_", " ")}
-              </span>
+            <div className="p-3.5 flex items-center justify-between">
+              <span className="text-zinc-600">Low-sensory quiet areas</span>
+              {renderBadge(profile.sensory.prefersQuieterEnvironments)}
             </div>
-          </CardContent>
-        </Card>
+            <div className="p-3.5 flex items-center justify-between">
+              <span className="text-zinc-600">Predictable paths</span>
+              {renderBadge(profile.sensory.requiresPredictableWayfinding)}
+            </div>
+          </div>
+        </div>
 
-        {/* Temporary Limitation */}
-        <Card variant="subtle">
-          <CardHeader className="pb-3">
-            <div className="flex items-center gap-2 text-teal-700 mb-0.5">
-              <Clock className="h-4 w-4" aria-hidden="true" />
-              <CardTitle className="text-sm">Temporary Limitations &amp; Recovery</CardTitle>
+        {/* 3. Hearing & Communication */}
+        <div className="rounded-2xl border border-black/[0.06] bg-white overflow-hidden shadow-xs">
+          <div className="p-4 border-b border-black/[0.04] bg-zinc-50/60 flex items-center gap-2">
+            <Volume2 className="h-4 w-4 text-teal-600" />
+            <h3 className="text-xs font-bold uppercase tracking-wider text-zinc-700">
+              Hearing &amp; Visual Alerts
+            </h3>
+          </div>
+
+          <div className="divide-y divide-black/[0.04] text-xs">
+            <div className="p-3.5 flex items-center justify-between">
+              <span className="text-zinc-600">Visual displays</span>
+              {renderBadge(profile.hearing.requiresVisualAnnouncements)}
             </div>
-            <CardDescription className="text-xs">
-              Time-bound recovery conditions, acute injuries, or post-surgery restrictions.
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="text-xs space-y-2">
-            {profile.temporary.hasTemporaryLimitation ? (
-              <div className="space-y-2">
-                <div className="p-2.5 rounded-lg bg-amber-50 border border-amber-200 text-amber-900">
-                  <div className="font-medium">Active Temporary Condition</div>
-                  <div className="text-[11px] mt-0.5 text-amber-800">
-                    {profile.temporary.description || "Active temporary mobility constraint recorded."}
+            <div className="p-3.5 flex items-center justify-between">
+              <span className="text-zinc-600">Emergency strobe alerts</span>
+              {renderBadge(profile.hearing.requiresVisualEmergencyAlerts)}
+            </div>
+            <div className="p-3.5 flex items-center justify-between">
+              <span className="text-zinc-600">Written instructions</span>
+              {renderBadge(profile.hearing.requiresWrittenInstructions)}
+            </div>
+            <div className="p-3.5 flex items-center justify-between">
+              <span className="text-zinc-600">Induction loop (T-coil)</span>
+              {renderBadge(profile.hearing.requiresHearingLoop)}
+            </div>
+          </div>
+        </div>
+
+        {/* 4. Stamina & Temporary Restrictions */}
+        <div className="rounded-2xl border border-black/[0.06] bg-white overflow-hidden shadow-xs">
+          <div className="p-4 border-b border-black/[0.04] bg-zinc-50/60 flex items-center gap-2">
+            <Activity className="h-4 w-4 text-teal-600" />
+            <h3 className="text-xs font-bold uppercase tracking-wider text-zinc-700">
+              Stamina &amp; Temporary Limits
+            </h3>
+          </div>
+
+          <div className="divide-y divide-black/[0.04] text-xs">
+            <div className="p-3.5 flex items-center justify-between">
+              <span className="text-zinc-600">Frequent rest benches</span>
+              {renderBadge(profile.mobility.requiresFrequentRestStops)}
+            </div>
+            <div className="p-3.5 flex items-center justify-between">
+              <span className="text-zinc-600">Max walking endurance</span>
+              <span className="font-mono font-semibold text-[#111110] tabular-nums">
+                {profile.mobility.maxWalkingDistanceMeters !== null
+                  ? `${profile.mobility.maxWalkingDistanceMeters} m`
+                  : "Unlimited"}
+              </span>
+            </div>
+            <div className="p-3.5 flex items-center justify-between">
+              <span className="text-zinc-600">Temporary condition</span>
+              <span className="font-semibold text-zinc-800">
+                {profile.temporary.hasTemporaryLimitation ? "Active" : "None"}
+              </span>
+            </div>
+            {profile.temporary.hasTemporaryLimitation && (
+              <div className="p-3.5 bg-amber-50/60 text-amber-900 space-y-1">
+                <div className="font-semibold">{profile.temporary.description}</div>
+                {profile.temporary.expectedDurationDays && (
+                  <div className="text-[11px] text-amber-800">
+                    Expected recovery in ~{profile.temporary.expectedDurationDays} days
                   </div>
-                  {profile.temporary.expectedDurationDays && (
-                    <div className="text-[11px] font-semibold mt-1">
-                      Expected recovery: ~{profile.temporary.expectedDurationDays} days
-                    </div>
-                  )}
-                </div>
-                <div className="flex justify-between py-1 border-b border-slate-200/60">
-                  <span className="text-slate-500">Stair climbing difficulty</span>
-                  <span className="font-medium text-slate-900">
-                    {profile.temporary.difficultyUsingStairs ? "Yes" : "No"}
-                  </span>
-                </div>
-                <div className="flex justify-between py-1 border-b border-slate-200/60">
-                  <span className="text-slate-500">Temporary crutches in use</span>
-                  <span className="font-medium text-slate-900">
-                    {profile.temporary.temporaryUseOfCrutches ? "Yes" : "No"}
-                  </span>
-                </div>
-              </div>
-            ) : (
-              <div className="p-4 rounded-lg bg-slate-50 border border-slate-200 text-slate-500 text-center">
-                <Sparkles className="h-5 w-5 mx-auto mb-1 text-slate-400" />
-                No active temporary limitation or injury recorded.
+                )}
               </div>
             )}
-          </CardContent>
-        </Card>
+          </div>
+        </div>
       </div>
     </div>
   );

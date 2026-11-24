@@ -62,24 +62,30 @@ export async function POST(request: Request) {
     if (apiKey && apiKey.trim() && apiKey.trim() !== "your_openrouteservice_api_key_here") {
       try {
         const { options } = buildORSWheelchairRestrictions(safeProfile);
-        const url = "https://api.heigit.org/openrouteservice/v2/directions/wheelchair/geojson";
+        const isWheelchairUser =
+          safeProfile.mobility.usesWheelchair ||
+          safeProfile.mobility.requiresStepFreeAccess === "essential";
 
-        const payload = {
+        // Try wheelchair profile first if wheelchair user, else foot-walking
+        const profileSlug = isWheelchairUser ? "wheelchair" : "foot-walking";
+        let url = `https://api.openrouteservice.org/v2/directions/${profileSlug}/geojson`;
+
+        const payload: Record<string, unknown> = {
           coordinates: [
             [origin.longitude, origin.latitude],
             [destination.longitude, destination.latitude],
           ],
-          options,
-          extra_info: ["steepness", "surface", "waytype", "waycategory", "suitability", "osmid"],
+          options: isWheelchairUser ? options : undefined,
+          extra_info: ["steepness", "surface", "waytype", "waycategory", "suitability"],
           alternative_routes: {
             target_count: 2,
             weight_factor: 1.4,
           },
           instructions: true,
-          elevation: true,
+          elevation: false,
         };
 
-        const response = await fetch(url, {
+        let response = await fetch(url, {
           method: "POST",
           headers: {
             Authorization: apiKey,
@@ -90,8 +96,25 @@ export async function POST(request: Request) {
           signal: AbortSignal.timeout(8000),
         });
 
+        // If wheelchair profile returned no routes, try foot-walking as accessible fallback
+        if (!response.ok && isWheelchairUser) {
+          url = "https://api.openrouteservice.org/v2/directions/foot-walking/geojson";
+          response = await fetch(url, {
+            method: "POST",
+            headers: {
+              Authorization: apiKey,
+              "Content-Type": "application/json",
+              Accept: "application/json, application/geo+json",
+            },
+            body: JSON.stringify({
+              ...payload,
+              options: undefined,
+            }),
+            signal: AbortSignal.timeout(8000),
+          });
+        }
+
         if (!response.ok) {
-          // Treat non‑ok responses as failures to trigger demo fallback
           throw new Error(`ORS request failed with status ${response.status}`);
         }
 

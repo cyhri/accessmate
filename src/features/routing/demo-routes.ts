@@ -53,6 +53,88 @@ export const DEMO_LOCATIONS: readonly GeocodingResult[] = [
   },
 ];
 
+// High-fidelity pre-mapped pedestrian corridor between Central Station and Kulturforum
+const BENCHMARK_STREET_COORDINATES: readonly [number, number][] = [
+  [52.525149, 13.369415], // Europaplatz / Central Station exit
+  [52.525245, 13.369396], // Station north pedestrian concourse
+  [52.525249, 13.369454], // Turn east along station plaza
+  [52.525195, 13.369493], // Ramp access to Washingtonplatz
+  [52.524850, 13.369650], // Washingtonplatz south terrace
+  [52.524200, 13.369720], // Spree river promenade
+  [52.523800, 13.369850], // Approach Moltkebrücke
+  [52.523450, 13.370200], // Moltkebrücke pedestrian sidewalk crossing
+  [52.522900, 13.370350], // South bank Spree bridge ramp
+  [52.522400, 13.370420], // Willy-Brandt-Straße crossing
+  [52.521800, 13.370500], // Chancellery park pedestrian path
+  [52.521200, 13.370600], // Spreebogenpark paved path
+  [52.520850, 13.371200], // Paul-Löbe-Haus west passage
+  [52.520400, 13.371800], // Otto-von-Bismarck-Allee sidewalk
+  [52.520000, 13.372100], // Reichstagufer pedestrian crossing
+  [52.519500, 13.372200], // Scheidemannstraße tactile crossing
+  [52.518800, 13.372150], // Simsonweg entry into Tiergarten
+  [52.517500, 13.371900], // Tiergarten main paved promenade
+  [52.516000, 13.371600], // Southward along Tiergarten asphalt path
+  [52.514500, 13.371300], // Intersection with Straße des 17. Juni
+  [52.513000, 13.371100], // Kemperplatz access corridor
+  [52.511800, 13.371350], // Philharmonie north entrance
+  [52.510500, 13.371600], // Herbert-von-Karajan-Straße
+  [52.509200, 13.371900], // Matthäikirchplatz
+  [52.508200, 13.372200], // Kulturforum main public plaza
+  [52.507500, 13.372500], // City Public Library (Staatsbibliothek) entrance
+];
+
+/**
+ * Generates street-following coordinates for demo mode.
+ * For the default Central Station -> Library route, uses the pre-mapped street corridor.
+ * For other locations, generates an orthogonal street grid path following urban blocks.
+ */
+function generateStreetFollowingCoordinates(
+  oLat: number,
+  oLng: number,
+  dLat: number,
+  dLng: number,
+  isAlt: boolean
+): [number, number][] {
+  // If routing between the default benchmark locations (Station & Library in Berlin)
+  const isDefaultPair =
+    Math.abs(oLat - 52.5251) < 0.005 &&
+    Math.abs(oLng - 13.3694) < 0.005 &&
+    Math.abs(dLat - 52.5208) < 0.015 &&
+    Math.abs(dLng - 13.3725) < 0.015;
+
+  if (isDefaultPair) {
+    if (!isAlt) {
+      return [...BENCHMARK_STREET_COORDINATES] as [number, number][];
+    }
+    // Alternative route via Old Town / Friedrichstraße with steps
+    return BENCHMARK_STREET_COORDINATES.map(([lat, lng], idx) => {
+      const offsetLng = idx > 5 && idx < 20 ? 0.0025 : 0;
+      return [lat, lng + offsetLng] as [number, number];
+    });
+  }
+
+  // Orthogonal Street-Grid Path Generator (L-shaped urban block turns instead of diagonal cut)
+  const waypoints: [number, number][] = [[oLat, oLng]];
+  const latDelta = dLat - oLat;
+  const lngDelta = dLng - oLng;
+
+  // Follow 4 urban street segments
+  const seg1Lat = oLat + latDelta * 0.45;
+  const seg1Lng = oLng;
+  waypoints.push([seg1Lat, seg1Lng]);
+
+  const seg2Lat = seg1Lat;
+  const seg2Lng = oLng + lngDelta * (isAlt ? 0.65 : 0.55);
+  waypoints.push([seg2Lat, seg2Lng]);
+
+  const seg3Lat = dLat;
+  const seg3Lng = seg2Lng;
+  waypoints.push([seg3Lat, seg3Lng]);
+
+  waypoints.push([dLat, dLng]);
+  return waypoints;
+}
+
 /**
  * Generates synthetic benchmark route plans for development, automated testing,
  * and reliable demonstration without consuming external API quota.
@@ -67,19 +149,7 @@ export function getDemoRoutePlan(
   const dLat = destination.coordinates.latitude;
   const dLng = destination.coordinates.longitude;
 
-  // Generate intermediate waypoints between origin and destination
-  const midLat1 = oLat + (dLat - oLat) * 0.33 + (isAlternative ? 0.0015 : -0.0008);
-  const midLng1 = oLng + (dLng - oLng) * 0.33 + (isAlternative ? -0.0012 : 0.0006);
-
-  const midLat2 = oLat + (dLat - oLat) * 0.66 + (isAlternative ? 0.0018 : -0.0005);
-  const midLng2 = oLng + (dLng - oLng) * 0.66 + (isAlternative ? -0.0010 : 0.0004);
-
-  const coordinates: [number, number][] = [
-    [oLat, oLng],
-    [midLat1, midLng1],
-    [midLat2, midLng2],
-    [dLat, dLng],
-  ];
+  const coordinates = generateStreetFollowingCoordinates(oLat, oLng, dLat, dLng, isAlternative);
 
   if (isAlternative) {
     // Alternative route: Contains historic cobblestones and 4 stairs

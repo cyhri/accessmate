@@ -56,21 +56,21 @@ export function EvidenceFieldEditor<T extends boolean | number | string | null>(
   };
 
   return (
-    <div className="py-3 border-b border-slate-100 last:border-b-0 space-y-2">
+    <div className="py-3 border-b border-zinc-100 last:border-b-0 space-y-2">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2.5">
         <div className="space-y-0.5 max-w-md">
-          <label className="text-sm font-medium text-slate-800 leading-snug">
+          <label className="text-sm font-medium text-zinc-800 leading-snug">
             {label}
           </label>
           {description && (
-            <p className="text-xs text-slate-500 leading-normal">{description}</p>
+            <p className="text-xs text-zinc-500 leading-normal">{description}</p>
           )}
         </div>
 
         <div className="flex flex-wrap items-center gap-2">
           {/* Main Value Control */}
           {type === "boolean" && (
-            <div className="inline-flex rounded-lg border border-slate-200 bg-slate-50 p-0.5">
+            <div className="inline-flex rounded-lg border border-zinc-200 bg-zinc-50 p-0.5">
               <button
                 type="button"
                 onClick={() => onChange({ ...item, value: true as T })}
@@ -78,7 +78,7 @@ export function EvidenceFieldEditor<T extends boolean | number | string | null>(
                   "px-3 py-1 text-xs rounded-md font-medium transition-colors cursor-pointer",
                   item.value === true
                     ? "bg-teal-600 text-white shadow-2xs font-semibold"
-                    : "text-slate-600 hover:text-slate-900"
+                    : "text-zinc-600 hover:text-zinc-900"
                 )}
               >
                 Yes / Present
@@ -89,8 +89,8 @@ export function EvidenceFieldEditor<T extends boolean | number | string | null>(
                 className={cn(
                   "px-3 py-1 text-xs rounded-md font-medium transition-colors cursor-pointer",
                   item.value === false
-                    ? "bg-slate-800 text-white shadow-2xs font-semibold"
-                    : "text-slate-600 hover:text-slate-900"
+                    ? "bg-zinc-800 text-white shadow-2xs font-semibold"
+                    : "text-zinc-600 hover:text-zinc-900"
                 )}
               >
                 No / Absent
@@ -112,10 +112,10 @@ export function EvidenceFieldEditor<T extends boolean | number | string | null>(
                     value: (e.target.value === "" ? null : Number(e.target.value)) as T,
                   })
                 }
-                className="w-full rounded-lg border border-slate-300 bg-white py-1.5 pl-2.5 pr-8 text-xs text-slate-900 focus:outline-none focus:ring-2 focus:ring-teal-600 focus:border-teal-600"
+                className="w-full rounded-lg border border-zinc-300 bg-white py-1.5 pl-2.5 pr-8 text-xs text-zinc-900 focus:outline-none focus:ring-2 focus:ring-teal-600 focus:border-teal-600"
               />
               {unit && (
-                <span className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2.5 text-[11px] font-medium text-slate-400">
+                <span className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-2.5 text-[11px] font-medium text-zinc-400">
                   {unit}
                 </span>
               )}
@@ -126,7 +126,7 @@ export function EvidenceFieldEditor<T extends boolean | number | string | null>(
             <select
               value={String(item.value ?? "")}
               onChange={(e) => onChange({ ...item, value: e.target.value as T })}
-              className="text-xs rounded-lg border border-slate-300 bg-white py-1.5 pl-2.5 pr-8 text-slate-900 focus:outline-none focus:ring-2 focus:ring-teal-600 cursor-pointer"
+              className="text-xs rounded-lg border border-zinc-300 bg-white py-1.5 pl-2.5 pr-8 text-zinc-900 focus:outline-none focus:ring-2 focus:ring-teal-600 cursor-pointer"
             >
               {selectOptions.map((opt) => (
                 <option key={opt.value} value={opt.value}>
@@ -146,8 +146,8 @@ export function EvidenceFieldEditor<T extends boolean | number | string | null>(
               item.status === EVIDENCE_STATUSES.VERIFIED && "bg-emerald-50 text-emerald-800 border-emerald-300",
               item.status === EVIDENCE_STATUSES.USER_REPORTED && "bg-sky-50 text-sky-800 border-sky-300",
               item.status === EVIDENCE_STATUSES.UNVERIFIED && "bg-amber-50 text-amber-800 border-amber-300",
-              item.status === EVIDENCE_STATUSES.UNKNOWN && "bg-slate-100 text-slate-700 border-slate-300",
-              item.status === EVIDENCE_STATUSES.NOT_APPLICABLE && "bg-slate-50 text-slate-500 border-slate-200"
+              item.status === EVIDENCE_STATUSES.UNKNOWN && "bg-zinc-100 text-zinc-700 border-zinc-300",
+              item.status === EVIDENCE_STATUSES.NOT_APPLICABLE && "bg-zinc-50 text-zinc-500 border-zinc-200"
             )}
           >
             <option value="verified">Verified Audit</option>
@@ -167,7 +167,7 @@ export function EvidenceFieldEditor<T extends boolean | number | string | null>(
               "p-1.5 rounded-lg border text-xs transition-colors cursor-pointer",
               showMetadata || item.notes || item.source
                 ? "bg-teal-50 border-teal-300 text-teal-700"
-                : "border-slate-200 text-slate-400 hover:text-slate-600 hover:bg-slate-50"
+                : "border-zinc-200 text-zinc-400 hover:text-zinc-600 hover:bg-zinc-50"
             )}
           >
             <MessageSquare className="h-3.5 w-3.5" aria-hidden="true" />
@@ -178,9 +178,9 @@ export function EvidenceFieldEditor<T extends boolean | number | string | null>(
 
       {/* Expandable Evidence Provenance & Inspector Notes */}
       {showMetadata && (
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 bg-slate-50 p-2.5 rounded-lg border border-slate-200 text-xs">
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-2 bg-zinc-50 p-2.5 rounded-lg border border-zinc-200 text-xs">
           <div>
-            <label className="text-[11px] font-medium text-slate-500 block mb-0.5">
+            <label className="text-[11px] font-medium text-zinc-500 block mb-0.5">
               Auditor Notes / Condition Details
             </label>
             <input
@@ -188,11 +188,11 @@ export function EvidenceFieldEditor<T extends boolean | number | string | null>(
               value={item.notes ?? ""}
               onChange={(e) => handleNotesChange(e.target.value)}
               placeholder="e.g. West entrance only; heavy door during high wind"
-              className="w-full text-xs rounded border border-slate-300 bg-white px-2 py-1 text-slate-800 placeholder:text-slate-400 focus:outline-none focus:ring-1 focus:ring-teal-600"
+              className="w-full text-xs rounded border border-zinc-300 bg-white px-2 py-1 text-zinc-800 placeholder:text-zinc-400 focus:outline-none focus:ring-1 focus:ring-teal-600"
             />
           </div>
           <div>
-            <label className="text-[11px] font-medium text-slate-500 block mb-0.5">
+            <label className="text-[11px] font-medium text-zinc-500 block mb-0.5">
               Source / Audit Provenance
             </label>
             <input
@@ -200,7 +200,7 @@ export function EvidenceFieldEditor<T extends boolean | number | string | null>(
               value={item.source ?? ""}
               onChange={(e) => handleSourceChange(e.target.value)}
               placeholder="e.g. City Accessibility Audit 2026, Inspector J. Doe"
-              className="w-full text-xs rounded border border-slate-300 bg-white px-2 py-1 text-slate-800 placeholder:text-slate-400 focus:outline-none focus:ring-1 focus:ring-teal-600"
+              className="w-full text-xs rounded border border-zinc-300 bg-white px-2 py-1 text-zinc-800 placeholder:text-zinc-400 focus:outline-none focus:ring-1 focus:ring-teal-600"
             />
           </div>
         </div>
