@@ -1,221 +1,186 @@
 # ACCESSMATE — Personalized Accessibility & Mobility Decision-Support System
 
-> **Phase 2: Professional Application Shell & Design System Baseline**  
+> **Production Platform: Centralized Supabase Backend, Dual-Panel Architecture, 3D Vector Navigation & Expert Inference Engine**  
 > An expert decision-support platform designed to evaluate environmental compatibility between individual accessibility requirements and physical built environments or transit paths.
 
 ---
 
-## 1. Project Title & Overview
+## 1. Project Overview & Architecture
 
-**ACCESSMATE** is a knowledge-based, expert decision-support system developed to assess whether a public building, facility, or journey satisfies an individual's specific accessibility criteria. Rather than reducing accessibility to an oversimplified, binary label ("accessible" vs. "inaccessible"), ACCESSMATE models the complex, multi-dimensional reality of physical barriers, sensory considerations, and individual mobility profiles.
+**ACCESSMATE** is a full-stack, knowledge-based accessibility and mobility platform built with two distinct application experiences powered by a unified **Supabase PostgreSQL** backend:
 
-By cross-referencing structured place audits with a user's stated requirements through a forward-chaining rule engine, the system detects physical and environmental barriers, communicates uncertainty, and yields transparent, explainable decision traces.
+1. **USER PANEL (`/map`, `/reports`, `/profile`, `/settings`):**  
+   Designed for everyday pedestrians, wheelchair users, and travelers requiring accessible mobility guidance:
+   - **Interactive 3D Vector Map:** Powered by MapLibre GL, OpenFreeMap vector styles (`liberty`), and true 3D extruded building models.
+   - **Pedestrian & Wheelchair Routing:** Mapped pedestrian geometry using OpenRouteService with incline limits, step-free corridors, and surface analysis.
+   - **Turn-by-Turn GPS Navigation:** Active tracking with real-time waypoint progression, remaining distance/ETA calculation, and automatic rerouting on deviation.
+   - **Directional Along-Route Hazard Alerts:** Vector corridor geometry checks (`corridor < 35m`, forward `dot product > 0.2`) alerting users to obstacles directly ahead while suppressing hazards behind them.
+   - **Community Obstacle Reporting:** Map-click coordinate picker or current GPS position, obstacle categorization, severity tagging, and peer confirmation.
+   - **Personalized Accessibility Profile:** Configurable physical, visual, and sensory tolerances persisted in Supabase `accessibility_profiles`.
 
----
-
-## 2. Problem Statement
-
-Accessibility information in existing municipal and mapping platforms is frequently incomplete, outdated, or collapsed into a single generic rating. However, accessibility is deeply personal and context-dependent:
-
-- A step-free entrance with a heavy manual door benefits a motorized scooter user only if automated door openers or wide clearances exist.
-- A person with low vision requires high visual contrast, tactile ground paving, and audible announcements, which standard "wheelchair-accessible" badges completely omit.
-- An individual with neurodivergence or sensory processing sensitivities may encounter severe barriers in loud, crowded, or flickering environments even if physical entry is level.
-- Out-of-service elevators or restrooms located across inaccessible thresholds frequently turn ostensibly "accessible" buildings into practical dead-ends.
-
-People frequently arrive at destinations only to encounter unannounced, critical barriers that could have been identified in advance. ACCESSMATE bridges this information gap by delivering tailored, explainable compatibility assessments.
-
----
-
-## 3. Project Objectives
-
-1. **Personalized Compatibility Modeling:** Evaluate specific user capabilities (mobility aids, step tolerance, doorway clearance, lighting, sensory thresholds) against physical facility attributes.
-2. **Transparent, Explainable Reasoning:** Provide a complete audit trace of which accessibility rules fired, why a venue is compatible or incompatible, and which environmental facts led to the outcome.
-3. **Evidence & Confidence Grading:** Categorize and display the provenance of data (verified audit, official facility submission, community report, heuristic inference, or unknown) so users understand reliability.
-4. **Actionable Recommendations:** Suggest concrete next steps (e.g., alternative entrances, staff assistance requirements, or alternative transit corridors) when barriers are identified.
-5. **Modular Architecture:** Maintain strict separation between the user interface, knowledge base, inference engine, and spatial routing services to support phased expansion and independent verification.
+2. **ADMIN PANEL (`/admin/*`):**  
+   Designed for accessibility auditors, venue managers, and operations teams:
+   - **Operations Dashboard (`/admin`):** Live database metrics for venues, audits, community reports, barrier severity, and moderation activity.
+   - **Venue Management (`/admin/venues`):** Register and maintain public transit hubs, civic buildings, and parks directly in `public.venues`.
+   - **Building Accessibility Audits (`/admin/assessments`, `/admin/buildings/new`):** Author physical built-environment audits across entrance clearances, ramps, elevators, and evidence confidence tiers.
+   - **Expert Inference Engine (`/admin/expert-assessment`):** Forward-chaining rule engine cross-referencing user profiles against venue audits with transparent decision traces.
+   - **Report Moderation Workspace (`/admin/reports`):** Full moderation lifecycle (`submitted` → `under_review` → `verified` / `rejected` / `resolved`) with immutable audit logging in `report_moderation_history`.
+   - **User & Role Management (`/admin/users`):** RBAC administration promoting or demoting members via `app_metadata.role` with sole-admin protection.
+   - **System Diagnostics (`/admin/settings`):** Infrastructure monitoring (tile server, routing API, RLS status, database health).
 
 ---
 
-## 4. Design Direction & Design System (Phase 2)
+## 2. Supabase Primary Backend Architecture
 
-ACCESSMATE features a bespoke, premium SaaS design system created with accessibility, clarity, and trust as primary architectural tenets:
-
-- **Color Palette:**
-  - **Deep Navy (`#0f172a` / `#1e293b`):** Grounded, trustworthy primary dark tone for persistent sidebar navigation and high-contrast text.
-  - **Teal Accent (`#0d9488` / `#0f766e`):** Purpose-driven primary action and focus indicator color meeting WCAG AA contrast standards.
-  - **Subtle Mint (`#f0fdfa` / `#ccfbf1`):** Soft contextual backgrounds, positive callouts, and badge backgrounds.
-  - **Soft Off-White (`#f8fafc`):** Application canvas background reducing eye fatigue.
-  - **Thin Subtle Borders (`#e2e8f0`):** Structured visual hierarchy without visual clutter.
-- **Accessibility & Focus Indicators:**
-  - 2px visible teal outline with offset (`focus-visible:ring-2 focus-visible:ring-teal-600 focus-visible:ring-offset-2`) across every interactive element.
-  - Automated operating system `prefers-reduced-motion` detection and disablement of non-essential animations.
-  - Standardized semantic HTML landmarks (`<aside>`, `<header>`, `<main id="main-content">`, `<nav>`, `<footer>`) with skip navigation.
-- **Iconography:** Consistent, accessible icons powered by `lucide-react`.
-
----
-
-## 5. Technology Stack
-
-### Core Framework & Runtime
-- **Next.js 16 (App Router):** Server-rendered application shell, Partial Prerendering, and static optimization.
-- **React 19:** Component model with strict concurrency and server-first ergonomics.
-- **TypeScript 5 (Strict Mode):** Type-safe interfaces across all domain entities, inference contracts, and layout components.
-- **Node.js (v24 LTS):** Runtime environment with native test runner.
-
-### Styling & Design System
-- **Tailwind CSS 4:** Zero-runtime styling with accessible CSS custom properties, responsive breakpoints, high-contrast focus rings, and `prefers-reduced-motion` compliance.
-- **Lucide React:** Consistent iconography with ARIA hidden attributes on decorative glyphs.
-
-### Code Quality & Testing
-- **ESLint 9 & eslint-config-next:** Linting enforcing React 19 rules and core web vitals.
-- **TypeScript Compiler (`tsc`):** Strict type validation (`noUncheckedIndexedAccess`, `strictNullChecks`, `noImplicitAny`).
-- **Node Test Runner (`node:test`):** Lightweight, zero-dependency unit and regression test suite.
-
----
-
-## 6. Project Structure
+ACCESSMATE utilizes the official `@supabase/ssr` cookie-based architecture:
 
 ```
-accessmate/
-├── .env.example                               # Safe environment variable template
-├── .gitignore                                 # Git ignore rules for Next.js, Node, and environments
-├── eslint.config.mjs                          # ESLint 9 configuration with Next.js core web vitals
-├── next.config.ts                             # Next.js runtime and build configuration
-├── package.json                               # Package manifest, dependencies, and scripts
-├── tsconfig.json                              # TypeScript strict configuration
-├── public/                                    # Static assets (favicons, icons)
-├── tests/                                     # Foundation and domain contract test suites
-│   └── foundation.test.ts                     # Test suite verifying config, constants, and utilities
-└── src/
-    ├── app/                                   # Next.js App Router (All 6 core routes)
-    │   ├── assessment/page.tsx                # Building & Facility Assessment module preview
-    │   ├── profile/page.tsx                   # Accessibility Profile criteria module preview
-    │   ├── reports/page.tsx                   # Community hazard reporting module preview
-    │   ├── routes/page.tsx                    # Route Assessment & Mobility Advisor preview
-    │   ├── settings/page.tsx                  # Accessibility preferences & system diagnostics
-    │   ├── error.tsx                          # Accessible client error boundary
-    │   ├── globals.css                        # Design tokens, accessibility rings, Tailwind imports
-    │   ├── layout.tsx                         # Responsive root layout wrapping AppShell
-    │   ├── loading.tsx                        # Accessible loading skeleton
-    │   ├── not-found.tsx                      # Accessible 404 page
-    │   └── page.tsx                           # Phase 2 Dashboard Overview
-    ├── components/
-    │   ├── layout/                            # Structural layout components
-    │   │   ├── app-header.tsx                 # Top header with breadcrumb, a11y badge, mobile toggle
-    │   │   ├── app-shell.tsx                  # Desktop/mobile shell orchestrator
-    │   │   ├── footer.tsx                     # Semantic footer with scope disclaimer & metadata
-    │   │   ├── header.tsx                     # Top navigation bar fallback
-    │   │   ├── sidebar.tsx                    # Deep navy navigation sidebar with active indicators
-    │   │   └── index.ts                       # Layout barrel export
-    │   └── ui/                                # Reusable, accessible UI component primitives
-    │       ├── alert.tsx                      # Semantic alert callout (role="region", aria-live)
-    │       ├── badge.tsx                      # Status and category indicator badges
-    │       ├── breadcrumb.tsx                 # Accessible breadcrumb trail
-    │       ├── button.tsx                     # Accessible button with focus rings & variants
-    │       ├── card.tsx                       # Semantic card surface components
-    │       ├── container.tsx                  # Responsive container with max-width scales
-    │       ├── empty-state.tsx                # Accessible empty state indicator
-    │       ├── form-label.tsx                 # Accessible semantic form label
-    │       ├── input.tsx                      # Accessible text input with error states & icons
-    │       ├── loading-state.tsx              # Skeleton loader with screen-reader status
-    │       ├── section-heading.tsx            # Reusable section heading with badges & actions
-    │       ├── select.tsx                     # Accessible dropdown select control
-    │       ├── skip-link.tsx                  # Accessible skip-to-content anchor link
-    │       ├── tooltip.tsx                    # Accessible info popover/tooltip
-    │       ├── upcoming-notice.tsx            # Standardized future phase milestone notice
-    │       └── index.ts                       # UI component barrel export
-    ├── config/
-    │   └── site.ts                            # System metadata, navigation routes, and links
-    ├── constants/
-    │   └── index.ts                           # Domain dimensions, evidence levels, barrier severities
-    ├── features/                              # Modular feature module contracts
-    │   ├── assessment/index.ts                # Built-environment audit interfaces & module barrel
-    │   ├── inference/index.ts                 # Expert inference engine interfaces & module barrel
-    │   ├── profiles/index.ts                  # Personalized user criteria interfaces & module barrel
-    │   └── routing/index.ts                   # Route & spatial navigation interfaces & module barrel
-    ├── hooks/
-    │   ├── use-media-query.ts                 # Accessible matchMedia & reduced-motion subscriptions
-    │   └── index.ts                           # Hooks barrel export
-    ├── lib/
-    │   ├── utils.ts                           # CSS class combiner (cn) & accessible date formatters
-    │   └── index.ts                           # Lib barrel export
-    └── types/                                 # Strict domain type definitions
-        ├── assessment.ts                      # Facility attributes, entrances, vertical circulation
-        ├── common.ts                          # Coordinates, address, base entity models
-        ├── index.ts                           # Types barrel export
-        ├── inference.ts                       # Working facts, rules, barriers, explanation traces
-        ├── navigation.ts                      # Path segments, surface types, route plan contracts
-        └── profile.ts                         # Mobility aids, visual, auditory, and sensory criteria
+src/
+  lib/
+    supabase/
+      client.ts     # Browser client (createBrowserClient) using publishable/anon key
+      server.ts     # Server client (createServerClient) with cookie storage & requireAuth/requireAdmin
+      proxy.ts      # Edge session refresh & authorization proxy for Next.js middleware
+      admin.ts      # Privileged server-only client (SUPABASE_SECRET_KEY) for administrative tasks
+      storage.ts    # Storage client for uploads across buckets (building-evidence, community-reports, etc.)
+      types.ts      # Complete TypeScript database types matching PostgreSQL schema
+    repositories/
+      profiles.ts   # Accessibility & user profile persistence
+      venues.ts     # Venues CRUD & Realtime subscriptions
+      assessments.ts# Building audits & physical features
+      reports.ts    # Hazard reports, deduplicated confirmations & moderation
 ```
+
+### Server vs Browser Key Safety
+- **Browser Client:** Consumes only `NEXT_PUBLIC_SUPABASE_URL` and `NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY` (or `NEXT_PUBLIC_SUPABASE_ANON_KEY`).
+- **Server Administrative Operations:** Consumes `SUPABASE_SECRET_KEY` strictly inside server actions or protected API endpoints. `SUPABASE_SECRET_KEY` is **never** bundled or exposed to the client.
 
 ---
 
-## 7. Installation & Local Development
+## 3. Database Schema & PostgreSQL Migrations
 
-### Prerequisites
-- **Node.js:** `v20.x` or higher (recommended: `v24 LTS`)
-- **npm:** `v10.x` or higher
-- **Git**
+The database migration is located at:
+```
+supabase/migrations/20261125_accessmate_primary_schema.sql
+```
 
-### Installation & Run Steps
+### Managed Tables
+
+| Table | Description | Primary Key / Constraints |
+| :--- | :--- | :--- |
+| `profiles` | User accounts, display names, avatars | `id UUID REFERENCES auth.users(id)` |
+| `accessibility_profiles` | Personal mobility, sensory & visual tolerances | `id UUID`, `user_id UUID REFERENCES auth.users` |
+| `venues` | Public destinations & transit hubs | `id UUID`, indexed by `(publication_status, latitude, longitude)` |
+| `building_assessments` | Measured built-environment audits | `id UUID`, `venue_id UUID REFERENCES venues` |
+| `assessment_evidence` | Specific observations with confidence rating | `id UUID`, `assessment_id UUID REFERENCES building_assessments` |
+| `community_reports` | Temporary hazards & barriers | `id UUID`, indexed by `(status, moderation_status)` |
+| `report_confirmations` | Unique peer verification votes | `UNIQUE(report_id, user_id)` (prevents double voting) |
+| `report_moderation_history` | Moderation audit log | `id UUID`, `report_id UUID REFERENCES community_reports` |
+| `admin_activity` | Platform governance audit trail | `id UUID`, `admin_id UUID REFERENCES auth.users` |
+
+---
+
+## 4. Row Level Security (RLS) & Role System
+
+Row Level Security is enabled on **every** table in the `public` schema (25 active policies):
+
+- **User Privileges:**
+  - Read own account profile & update own editable fields.
+  - Create and manage own accessibility profiles (`(SELECT auth.uid()) = user_id`).
+  - Read published venues & verified building assessments.
+  - Submit community reports & read own submissions or verified public reports.
+  - Confirm any report at most once (enforced by `uq_report_confirmation` constraint and RLS).
+- **Admin Privileges:**
+  - Admin RLS policies evaluate `((auth.jwt() -> 'app_metadata' ->> 'role') = 'admin')`.
+  - User-editable `user_metadata` is **never** trusted for authorization decisions.
+  - Full CRUD on venues, building assessments, assessment evidence, and moderation history.
+
+### Provisioning the First Administrator
+
+Ordinary registrations always receive the `user` role by default. To provision or promote an administrator safely from the server:
 
 ```bash
-# 1. Clone repository
-git clone https://github.com/cyhri/accessmate.git
-cd accessmate
+# Provision or promote an administrator via server script (requires SUPABASE_SECRET_KEY)
+node scripts/provision-admin.mjs admin@accessmate.org
+```
 
-# 2. Install dependencies
+This operation:
+1. Locates the registered account in Supabase Auth.
+2. Updates `app_metadata.role = 'admin'` using the privileged admin client.
+3. Synchronizes the user profile in `public.profiles`.
+4. Records an audit event in `public.admin_activity`.
+
+---
+
+## 5. Supabase Storage & Realtime
+
+### Storage Buckets
+- `building-evidence`: Photos and audit documentation (Max 10MB; JPEG, PNG, WebP, PDF).
+- `community-reports`: Photos of temporary barriers attached to user reports (Max 10MB).
+- `venue-images`: High-resolution imagery for transit hubs and civic buildings.
+- `avatars`: User profile avatars (Max 5MB).
+
+### Realtime Subscriptions
+The `supabase_realtime` publication includes:
+- `community_reports`: Broadcasts newly reported obstacles and status updates immediately to all connected clients.
+- `report_confirmations`: Broadcasts verification count changes.
+- `report_moderation_history`: Broadcasts moderation status changes.
+
+---
+
+## 6. Pre-configured Testing Accounts
+
+| Role | Email | Password | Allowed Capabilities |
+| :--- | :--- | :--- | :--- |
+| **Administrator** | `admin@accessmate.org` | `Admin123!` | Access to `/admin/*`, venue management, building audits, expert rules, report moderation, user promotion. |
+| **Standard User** | `user@accessmate.org` | `User123!` | Access to `/map`, live routing, GPS navigation, obstacle reporting, personal profile, and settings. |
+
+---
+
+## 7. Setup & Development
+
+### 1. Install Dependencies
+```bash
 npm install
-
-# 3. Start local development server
-npm run dev
-
-# 4. Open in browser: http://localhost:3000
 ```
 
-### Verification Pipeline
-
+### 2. Environment Variables
+Copy `.env.example` to `.env.local`:
 ```bash
-npm run test       # Run Node unit test suite
-npm run typecheck  # Run TypeScript strict type verification
-npm run lint       # Run ESLint validation
-npm run build      # Run Next.js production build
+cp .env.example .env.local
 ```
 
----
-
-## 8. Development Roadmap
-
-```
-Phase 1: Architecture & Technical Foundation [COMPLETED]
-├── Next.js App Router, React 19, TypeScript strict mode
-├── Scalable folder structure & modular feature contracts
-└── CI-ready verification pipeline (Lint, Typecheck, Build, Unit Tests)
-
-Phase 2: Professional Application Shell & Design System [COMPLETED]
-├── Deep Navy & Teal design system with subtle mint backgrounds
-├── Desktop sticky sidebar navigation with mobile responsive drawer
-├── Complete accessible UI primitives (Card, Badge, Button, Input, Select, Tooltip, Breadcrumb)
-└── 6 core application routes (Dashboard, Profile, Routes, Assessment, Reports, Settings)
-
-Phase 3: Profiles & Assessment Modules [UPCOMING]
-├── User accessibility profile builder & criteria state management
-├── Structured place audit input forms with step/incline measurements
-└── Evidence provenance and confidence scoring
-
-Phase 4: Expert System Inference Engine [UPCOMING]
-├── Forward-chaining rule evaluation algorithm
-├── Conflict resolution & uncertainty heuristics
-└── Natural-language explanation facility & trace generation
-
-Phase 5: Routing & Spatial Decision Support [UPCOMING]
-├── OpenStreetMap / OpenRouteService pedestrian routing integration
-├── Micro-barrier overlay mapping (curb cuts, slope grades)
-└── Turn-by-turn accessibility guidance
+Ensure the following variables are configured:
+```env
+NEXT_PUBLIC_SUPABASE_URL="https://your-project.supabase.co"
+NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY="your-anon-or-publishable-key"
+NEXT_PUBLIC_SUPABASE_ANON_KEY="your-anon-or-publishable-key"
+SUPABASE_SECRET_KEY="your-service-role-key"
+DATABASE_URL="postgresql://postgres:password@db.your-project.supabase.co:5432/postgres"
+NEXT_PUBLIC_ORS_API_KEY="your-ors-api-key"
 ```
 
----
+### 3. Apply Database Migrations
+```bash
+node scripts/apply-migration.mjs
+```
 
-## 9. Important Scope & Legal Disclaimer
+### 4. Seed Initial Records
+```bash
+node scripts/seed-supabase.mjs
+```
 
-ACCESSMATE is an informational decision-support and planning tool. It is **not** an official municipal accessibility certification, an engineering substitute for an on-site professional access audit, or a guarantee that a specific location or route is safe to traverse. Users must always verify on-site conditions when traveling.
+### 5. Run Test Suite
+```bash
+npm test
+```
+
+### 6. Run Typecheck
+```bash
+npm run typecheck
+```
+
+### 7. Run Next.js Build
+```bash
+npm run build
+```

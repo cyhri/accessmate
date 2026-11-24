@@ -36,6 +36,16 @@ export interface NearestRoutePointResult {
 }
 
 /**
+ * Normalizes input coordinate to { latitude, longitude }
+ */
+function normalizeCoord(c: [number, number] | GeoCoordinates): GeoCoordinates {
+  if (Array.isArray(c)) {
+    return { latitude: c[0], longitude: c[1] };
+  }
+  return c;
+}
+
+/**
  * Calculates the perpendicular projection of a point onto a line segment.
  */
 function projectPointOnSegment(
@@ -75,11 +85,11 @@ function projectPointOnSegment(
 
 /**
  * Finds the nearest point on the route LineString, distance from route, and progress.
- * Coordinates are array of [latitude, longitude].
+ * Supports coordinates as array of [latitude, longitude] or GeoCoordinates objects.
  */
 export function findNearestPointOnRoute(
   userPos: { latitude: number; longitude: number },
-  routeCoordinates: readonly [number, number][],
+  routeCoordinates: readonly ([number, number] | GeoCoordinates)[],
   offRouteThresholdMeters = 30
 ): NearestRoutePointResult {
   if (routeCoordinates.length === 0) {
@@ -93,8 +103,8 @@ export function findNearestPointOnRoute(
   }
 
   if (routeCoordinates.length === 1) {
-    const p0 = routeCoordinates[0];
-    if (!p0) {
+    const raw0 = routeCoordinates[0];
+    if (!raw0) {
       return {
         point: { latitude: userPos.latitude, longitude: userPos.longitude },
         distanceMeters: 0,
@@ -103,7 +113,7 @@ export function findNearestPointOnRoute(
         isOffRoute: false,
       };
     }
-    const singleCoord = { latitude: p0[0], longitude: p0[1] };
+    const singleCoord = normalizeCoord(raw0);
     const dist = getHaversineDistanceMeters(userPos, singleCoord);
     return {
       point: singleCoord,
@@ -114,8 +124,8 @@ export function findNearestPointOnRoute(
     };
   }
 
-  const firstCoord = routeCoordinates[0];
-  if (!firstCoord) {
+  const rawFirst = routeCoordinates[0];
+  if (!rawFirst) {
     return {
       point: { latitude: userPos.latitude, longitude: userPos.longitude },
       distanceMeters: 0,
@@ -125,18 +135,19 @@ export function findNearestPointOnRoute(
     };
   }
 
+  const firstCoord = normalizeCoord(rawFirst);
   let minDistance = Infinity;
-  let bestPoint: GeoCoordinates = { latitude: firstCoord[0], longitude: firstCoord[1] };
+  let bestPoint: GeoCoordinates = firstCoord;
   let bestSegmentIndex = 0;
   let bestFraction = 0;
 
   for (let i = 0; i < routeCoordinates.length - 1; i++) {
-    const coordA = routeCoordinates[i];
-    const coordB = routeCoordinates[i + 1];
-    if (!coordA || !coordB) continue;
+    const rawA = routeCoordinates[i];
+    const rawB = routeCoordinates[i + 1];
+    if (!rawA || !rawB) continue;
 
-    const ptA = { latitude: coordA[0], longitude: coordA[1] };
-    const ptB = { latitude: coordB[0], longitude: coordB[1] };
+    const ptA = normalizeCoord(rawA);
+    const ptB = normalizeCoord(rawB);
 
     const projection = projectPointOnSegment(userPos, ptA, ptB);
     if (projection.distanceMeters < minDistance) {
@@ -160,7 +171,7 @@ export function findNearestPointOnRoute(
  * Calculates remaining walking distance along the actual route LineString geometry.
  */
 export function calculateRemainingRouteDistanceMeters(
-  routeCoordinates: readonly [number, number][],
+  routeCoordinates: readonly ([number, number] | GeoCoordinates)[],
   nearestResult: NearestRoutePointResult
 ): number {
   if (routeCoordinates.length < 2) return 0;
@@ -168,25 +179,34 @@ export function calculateRemainingRouteDistanceMeters(
   let remaining = 0;
 
   // Partial distance on the current segment from projected point to segment end
-  const nextCoord = routeCoordinates[nearestResult.segmentIndex + 1];
-  if (nextCoord) {
-    const currentEnd = {
-      latitude: nextCoord[0],
-      longitude: nextCoord[1],
-    };
+  const rawNext = routeCoordinates[nearestResult.segmentIndex + 1];
+  if (rawNext) {
+    const currentEnd = normalizeCoord(rawNext);
     remaining += getHaversineDistanceMeters(nearestResult.point, currentEnd);
   }
 
   // Sum all subsequent segments
   for (let i = nearestResult.segmentIndex + 1; i < routeCoordinates.length - 1; i++) {
-    const coord1 = routeCoordinates[i];
-    const coord2 = routeCoordinates[i + 1];
-    if (!coord1 || !coord2) continue;
+    const raw1 = routeCoordinates[i];
+    const raw2 = routeCoordinates[i + 1];
+    if (!raw1 || !raw2) continue;
 
-    const pt1 = { latitude: coord1[0], longitude: coord1[1] };
-    const pt2 = { latitude: coord2[0], longitude: coord2[1] };
+    const pt1 = normalizeCoord(raw1);
+    const pt2 = normalizeCoord(raw2);
     remaining += getHaversineDistanceMeters(pt1, pt2);
   }
 
   return Math.round(remaining);
+}
+
+/**
+ * Estimate travel time in minutes based on remaining distance and accessible travel speed.
+ * Default accessible pedestrian / wheelchair speed is approx 1.1 m/s (~4.0 km/h).
+ */
+export function calculateEstimatedDurationMinutes(
+  distanceMeters: number,
+  speedMetersPerSecond = 1.1
+): number {
+  if (distanceMeters <= 0) return 0;
+  return Math.max(1, Math.ceil(distanceMeters / (speedMetersPerSecond * 60)));
 }

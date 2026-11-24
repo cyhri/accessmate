@@ -5,6 +5,7 @@
 
 import type { BuildingAssessmentRecord, EvidenceItem } from "../../types/assessment.ts";
 import { SAMPLE_BUILDING_ASSESSMENTS } from "./sample-data.ts";
+import { supabase } from "@/lib/supabase/client";
 
 export const ASSESSMENTS_STORAGE_KEY = "accessmate_building_assessments";
 export const ASSESSMENTS_CORRUPT_BACKUP_KEY = "accessmate_building_assessments_corrupt_backup";
@@ -18,6 +19,85 @@ export interface StorageHealthReport {
 let inMemoryHealthReport: StorageHealthReport = {
   hasCorruptedData: false,
 };
+
+let isAssessmentsSyncInitialized = false;
+
+async function initSupabaseAssessmentsSync() {
+  if (typeof window === "undefined" || isAssessmentsSyncInitialized) return;
+  isAssessmentsSyncInitialized = true;
+
+  try {
+    const { data, error } = await supabase
+      .from("building_assessments")
+      .select("*")
+      .order("created_at", { ascending: false });
+
+    if (!error && data && data.length > 0) {
+      const records: BuildingAssessmentRecord[] = data.map((row) => {
+        const parsed = (row.assessment_data as any) || {};
+        return {
+          id: row.id,
+          general: {
+            name: parsed.general?.name || "Building Facility",
+            buildingType: parsed.general?.buildingType || "public_facility",
+            address: parsed.general?.address || "",
+            floorsCount: parsed.general?.floorsCount || 1,
+            assessmentDate: parsed.general?.assessmentDate || row.created_at.slice(0, 10),
+            notes: row.audit_notes || parsed.general?.notes || "",
+          },
+          entrance: parsed.entrance || SAMPLE_BUILDING_ASSESSMENTS[0]?.entrance,
+          internalMovement: parsed.internalMovement || SAMPLE_BUILDING_ASSESSMENTS[0]?.internalMovement,
+          restroom: parsed.restroom || SAMPLE_BUILDING_ASSESSMENTS[0]?.restroom,
+        } as BuildingAssessmentRecord;
+      });
+
+      localStorage.setItem(ASSESSMENTS_STORAGE_KEY, JSON.stringify(records));
+      window.dispatchEvent(new Event("accessmate:assessments-updated"));
+    }
+
+    supabase
+      .channel("assessments-realtime-channel")
+      .on(
+        "postgres_changes",
+        { event: "*", schema: "public", table: "building_assessments" },
+        async () => {
+          const { data: updated } = await supabase
+            .from("building_assessments")
+            .select("*")
+            .order("created_at", { ascending: false });
+
+          if (updated && updated.length > 0) {
+            const records: BuildingAssessmentRecord[] = updated.map((row) => {
+              const parsed = (row.assessment_data as any) || {};
+              return {
+                id: row.id,
+                general: {
+                  name: parsed.general?.name || "Building Facility",
+                  buildingType: parsed.general?.buildingType || "public_facility",
+                  address: parsed.general?.address || "",
+                  floorsCount: parsed.general?.floorsCount || 1,
+                  assessmentDate: parsed.general?.assessmentDate || row.created_at.slice(0, 10),
+                  notes: row.audit_notes || parsed.general?.notes || "",
+                },
+                entrance: parsed.entrance || SAMPLE_BUILDING_ASSESSMENTS[0]?.entrance,
+                internalMovement: parsed.internalMovement || SAMPLE_BUILDING_ASSESSMENTS[0]?.internalMovement,
+                restroom: parsed.restroom || SAMPLE_BUILDING_ASSESSMENTS[0]?.restroom,
+              } as BuildingAssessmentRecord;
+            });
+            localStorage.setItem(ASSESSMENTS_STORAGE_KEY, JSON.stringify(records));
+            window.dispatchEvent(new Event("accessmate:assessments-updated"));
+          }
+        }
+      )
+      .subscribe();
+  } catch (err) {
+    console.warn("Supabase assessments sync warning:", err);
+  }
+}
+
+if (typeof window !== "undefined") {
+  initSupabaseAssessmentsSync();
+}
 
 /**
  * Checks whether an assessment record is seed demonstration data.

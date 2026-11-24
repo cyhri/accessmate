@@ -21,6 +21,8 @@ import { Badge } from "@/components/ui/badge";
 import { motion, AnimatePresence } from "framer-motion";
 import { cn } from "@/lib/utils";
 import type { GeoCoordinates } from "@/types/common";
+import { useAuth } from "@/features/auth";
+import { UserAppShell } from "@/components/layout/user-app-shell";
 import {
   type CommunityReport,
   type ReportCategory,
@@ -61,6 +63,7 @@ const SEVERITIES: { value: ReportSeverity; label: string; color: string }[] = [
 ];
 
 export default function ReportsPage() {
+  const { user } = useAuth();
   const [reports, setReports] = useState<CommunityReport[]>(() => [...INITIAL_COMMUNITY_REPORTS]);
 
   const [filter, setFilter] = useState<"all" | "active" | "resolved">("all");
@@ -173,10 +176,13 @@ export default function ReportsPage() {
   }, []);
 
   const handleConfirm = (id: string) => {
+    const userId = user?.id ?? "local-user";
     if (confirmedIds.has(id)) return;
-    setConfirmedIds((prev) => new Set([...prev, id]));
-    reportsRepository.confirmReport(id);
-    setReports(reportsRepository.getReports());
+    const ok = reportsRepository.confirmReport(id, userId);
+    if (ok) {
+      setConfirmedIds((prev) => new Set([...prev, id]));
+      setReports(reportsRepository.getReports());
+    }
   };
 
   // Map click or picker update
@@ -239,10 +245,13 @@ export default function ReportsPage() {
       createdAt: new Date().toISOString(),
       timeAgo: "Just now",
       confirmationCount: 1,
+      confirmedByUserIds: user?.id ? [user.id] : [],
       details: newDetails.trim() || "Community verified physical barrier.",
       routeImpact: newRouteImpact.trim() || "Exercise caution or use alternative routing corridor.",
       status: "active",
-      reportedBy: "Community Reporter",
+      moderationStatus: "submitted",
+      reportedBy: user?.name ?? "Community Member",
+      reportedByUserId: user?.id,
     };
 
     reportsRepository.saveReport(newRep);
@@ -266,8 +275,9 @@ export default function ReportsPage() {
   });
 
   return (
-    <div className="space-y-6 pb-16 max-w-5xl">
-      {/* Header */}
+    <UserAppShell>
+      <div className="p-4 sm:p-6 lg:p-7 max-w-5xl mx-auto w-full space-y-6 pb-16">
+        {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
           <div className="flex items-center gap-2">
@@ -699,7 +709,15 @@ export default function ReportsPage() {
                     size="sm"
                     dot
                   >
-                    {isResolved ? "Resolved" : isCritical ? "Critical Barrier" : "Temporary Obstacle"}
+                    {isResolved
+                      ? "Resolved"
+                      : report.moderationStatus === "verified"
+                      ? "Verified Barrier"
+                      : report.moderationStatus === "under_review"
+                      ? "Under Review"
+                      : isCritical
+                      ? "Critical Barrier"
+                      : "Community Report"}
                   </Badge>
                   <span className="text-xs text-zinc-400 flex items-center gap-1 font-mono">
                     <Clock className="h-3 w-3" />
@@ -782,5 +800,6 @@ export default function ReportsPage() {
         })}
       </div>
     </div>
+  </UserAppShell>
   );
 }

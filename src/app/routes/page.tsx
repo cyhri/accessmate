@@ -44,6 +44,7 @@ import {
 } from "@/features/reports";
 import type { UserAccessibilityProfile } from "@/types/profile";
 import { cn } from "@/lib/utils";
+import { UserAppShell } from "@/components/layout/user-app-shell";
 
 // Dynamically import MapLibre 3D Vector Map with SSR disabled
 const RouteMapLibre = dynamic(
@@ -239,16 +240,35 @@ export default function RoutesPage() {
   const steps = useMemo(() => activeRoute?.steps ?? [], [activeRoute]);
   const activeStep = steps[activeStepIndex] ?? steps[0];
 
+  // Stable state refs to prevent stale closures in continuous GPS watcher after rerouting
+  const activeRouteRef = useRef(activeRoute);
+  const stepsRef = useRef(steps);
+  const destinationRef = useRef(destination);
+  const profileRef = useRef(profile);
+  const [isAcquiringGps, setIsAcquiringGps] = useState(false);
+
+  useEffect(() => {
+    activeRouteRef.current = activeRoute;
+    stepsRef.current = steps;
+    destinationRef.current = destination;
+    profileRef.current = profile;
+  }, [activeRoute, steps, destination, profile]);
+
   // GPS Position Update & Real-Time Rerouting Handler
   const handleGpsLocationUpdate = useCallback(
     (userCoords: GeoCoordinates, accuracy: number) => {
-      if (!activeRoute || activeRoute.coordinates.length < 2) return;
+      const currentRoute = activeRouteRef.current;
+      const currentDest = destinationRef.current;
+      const currentProfile = profileRef.current;
+      const currentSteps = stepsRef.current;
+
+      if (!currentRoute || currentRoute.coordinates.length < 2) return;
 
       // 1. Calculate nearest point on actual route LineString geometry
-      const nearest = findNearestPointOnRoute(userCoords, activeRoute.coordinates, 35);
+      const nearest = findNearestPointOnRoute(userCoords, currentRoute.coordinates, 35);
 
       // 2. Calculate remaining walking distance along actual route geometry
-      const remMeters = calculateRemainingRouteDistanceMeters(activeRoute.coordinates, nearest);
+      const remMeters = calculateRemainingRouteDistanceMeters(currentRoute.coordinates, nearest);
       setRemainingDistanceMeters(remMeters);
 
       // Dynamic arrival estimate based on 1.1 m/s accessible walking speed
@@ -265,7 +285,7 @@ export default function RoutesPage() {
         if (
           consecutiveOffRouteRef.current >= 2 &&
           now - lastRerouteTimestampRef.current > 15000 &&
-          destination
+          currentDest
         ) {
           consecutiveOffRouteRef.current = 0;
           lastRerouteTimestampRef.current = now;
@@ -281,7 +301,7 @@ export default function RoutesPage() {
           };
           setOrigin(rerouteOrigin);
 
-          calculateRoute(rerouteOrigin, destination, profile).finally(() => {
+          calculateRoute(rerouteOrigin, currentDest, currentProfile).finally(() => {
             setIsRerouting(false);
           });
         }
@@ -290,27 +310,31 @@ export default function RoutesPage() {
         consecutiveOffRouteRef.current = 0;
 
         // Auto-advance turn-by-turn steps when reaching next waypoint milestone
-        if (steps.length > 0) {
-          const cur = steps[activeStepIndex];
+        if (currentSteps.length > 0) {
+          const cur = currentSteps[activeStepIndex];
           if (cur && cur.wayPoints && cur.wayPoints.length > 1) {
             const stepEndWaypoint = cur.wayPoints[1];
-            if (nearest.segmentIndex >= stepEndWaypoint && activeStepIndex < steps.length - 1) {
+            if (nearest.segmentIndex >= stepEndWaypoint && activeStepIndex < currentSteps.length - 1) {
               const nextIdx = activeStepIndex + 1;
               setActiveStepIndex(nextIdx);
-              if (steps[nextIdx]) {
-                speakInstruction(steps[nextIdx].instruction);
+              if (currentSteps[nextIdx]) {
+                speakInstruction(currentSteps[nextIdx].instruction);
               }
             }
           }
         }
       }
 
-      // 4. Proximity Hazard Alerting: Alert when within 50m of an active community obstacle
+      // 4. Directional Along-Route Proximity Hazard Alerting
+      // Suppresses hazards that are behind the user or on parallel distant streets
       const hazardAlert = checkHazardProximity(
         userCoords,
         communityReports,
         50,
-        recentHazardAlertsRef.current
+        recentHazardAlertsRef.current,
+        45000,
+        currentRoute.coordinates.map(([lat, lon]) => ({ latitude: lat, longitude: lon })),
+        gpsHeading
       );
       if (hazardAlert) {
         recentHazardAlertsRef.current[hazardAlert.report.id] = Date.now();
@@ -321,67 +345,103 @@ export default function RoutesPage() {
         );
       }
     },
-    [activeRoute, activeStepIndex, calculateRoute, destination, profile, speakInstruction, steps, communityReports]
+    [activeStepIndex, calculateRoute, communityReports, gpsHeading, speakInstruction]
   );
 
   // Start Navigation Action (Live GPS vs Simulated Walkthrough)
+  // PART 5 Issue 1: Valid GPS reading required before entering Active Navigation
   const handleStartNavigation = () => {
-    setIsNavigating(true);
-    setIs3DMode(true);
-    setShowSearchPanel(false);
-    setActiveStepIndex(0);
-
     if (isLiveRoute) {
-      // Connect to genuine browser Geolocation watchPosition
       if (typeof navigator === "undefined" || !navigator.geolocation) {
         setGpsError("Geolocation is not supported by your browser.");
         return;
       }
 
+      setIsAcquiringGps(true);
       setGpsError(null);
-      speakInstruction(
-        `Starting live accessible navigation to ${destination?.name || "destination"}. ${steps[0]?.instruction || ""}`
-      );
 
-      const watchId = navigator.geolocation.watchPosition(
-        (position) => {
+      navigator.geolocation.getCurrentPosition(
+        (initialPos) => {
+          setIsAcquiringGps(false);
           const userCoords: GeoCoordinates = {
-            latitude: position.coords.latitude,
-            longitude: position.coords.longitude,
+            latitude: Number(initialPos.coords.latitude.toFixed(6)),
+            longitude: Number(initialPos.coords.longitude.toFixed(6)),
           };
+          const accuracy = Math.round(initialPos.coords.accuracy);
+
           setLiveGpsPosition(userCoords);
-          setGpsAccuracy(Math.round(position.coords.accuracy));
+          setGpsAccuracy(accuracy);
 
-          if (
-            typeof position.coords.heading === "number" &&
-            !Number.isNaN(position.coords.heading) &&
-            position.coords.heading >= 0
-          ) {
-            setGpsHeading(position.coords.heading);
+          if (accuracy > 60) {
+            setGpsError(`GPS accuracy is low (±${accuracy}m). Move to an open area for better satellite lock.`);
           }
 
-          handleGpsLocationUpdate(userCoords, position.coords.accuracy);
+          // Enter active navigation now that GPS fix is verified
+          setIsNavigating(true);
+          setIs3DMode(true);
+          setShowSearchPanel(false);
+          setActiveStepIndex(0);
+
+          speakInstruction(
+            `Starting live accessible navigation to ${destination?.name || "destination"}. ${steps[0]?.instruction || ""}`
+          );
+
+          if (gpsWatchIdRef.current !== null) {
+            navigator.geolocation.clearWatch(gpsWatchIdRef.current);
+          }
+
+          const watchId = navigator.geolocation.watchPosition(
+            (pos) => {
+              const currentCoords: GeoCoordinates = {
+                latitude: Number(pos.coords.latitude.toFixed(6)),
+                longitude: Number(pos.coords.longitude.toFixed(6)),
+              };
+              setLiveGpsPosition(currentCoords);
+              setGpsAccuracy(Math.round(pos.coords.accuracy));
+
+              if (
+                typeof pos.coords.heading === "number" &&
+                !Number.isNaN(pos.coords.heading) &&
+                pos.coords.heading >= 0
+              ) {
+                setGpsHeading(pos.coords.heading);
+              }
+
+              handleGpsLocationUpdate(currentCoords, pos.coords.accuracy);
+            },
+            (err) => {
+              console.warn("GPS watchPosition error:", err);
+              if (err.code === err.PERMISSION_DENIED) {
+                setGpsError("Location permission denied. Please allow location access.");
+              } else {
+                setGpsError("GPS signal lookup timed out. Retrying...");
+              }
+            },
+            {
+              enableHighAccuracy: true,
+              timeout: 20000,
+              maximumAge: 1500,
+            }
+          );
+
+          gpsWatchIdRef.current = watchId;
         },
-        (error) => {
-          console.warn("GPS watchPosition error:", error);
-          if (error.code === error.PERMISSION_DENIED) {
+        (err) => {
+          setIsAcquiringGps(false);
+          if (err.code === err.PERMISSION_DENIED) {
             setGpsError("Location permission denied. Please enable GPS location in your browser.");
-          } else if (error.code === error.POSITION_UNAVAILABLE) {
-            setGpsError("GPS signal unavailable. Move to an open area with sky visibility.");
           } else {
-            setGpsError("GPS lookup timed out. Retrying...");
+            setGpsError("Unable to acquire a valid GPS fix. Ensure you are outdoors with sky visibility.");
           }
         },
-        {
-          enableHighAccuracy: true,
-          timeout: 20000,
-          maximumAge: 1500,
-        }
+        { enableHighAccuracy: true, timeout: 12000 }
       );
-
-      gpsWatchIdRef.current = watchId;
     } else {
       // Demonstration walkthrough mode
+      setIsNavigating(true);
+      setIs3DMode(true);
+      setShowSearchPanel(false);
+      setActiveStepIndex(0);
       speakInstruction(
         `Starting benchmark route demonstration to ${destination?.name || "destination"}. ${steps[0]?.instruction || ""}`
       );
@@ -522,8 +582,9 @@ export default function RoutesPage() {
   };
 
   return (
-    <div className="space-y-5 pb-16">
-      {/* Apple-style Minimal Header with Start Navigation CTA */}
+    <UserAppShell>
+      <div className="p-4 sm:p-6 lg:p-7 max-w-7xl mx-auto w-full space-y-5 pb-16">
+        {/* Apple-style Minimal Header with Start Navigation CTA */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
         <div>
           <div className="flex items-center gap-2">
@@ -977,9 +1038,13 @@ export default function RoutesPage() {
             selectedRouteIndex={selectedRouteIndex}
             onSelectRoute={setSelectedRouteIndex}
             profileName={profile.name}
+            onStartNavigation={handleStartNavigation}
+            isNavigating={isNavigating}
+            isAcquiringGps={isAcquiringGps}
           />
         </div>
       )}
     </div>
+  </UserAppShell>
   );
 }

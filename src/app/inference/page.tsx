@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import Link from "next/link";
+import { AdminAppShell } from "@/components/layout/admin-app-shell";
 import {
   Cpu,
   CheckCircle2,
@@ -9,6 +10,8 @@ import {
   XCircle,
   HelpCircle,
   ShieldAlert,
+  Shield,
+  ArrowRight,
   SlidersHorizontal,
   Building2,
   UserCheck,
@@ -137,8 +140,23 @@ export default function InferencePage() {
   };
 
   return (
-    <div className="space-y-6 pb-12">
-      {/* Header */}
+    <AdminAppShell>
+      <div className="space-y-6 pb-12">
+        {/* Admin Navigation Notice */}
+        <div className="bg-purple-50 border border-purple-200 rounded-xl p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs text-purple-900">
+          <div className="flex items-center gap-2">
+            <Shield className="w-4 h-4 text-purple-700 shrink-0" />
+            <span>This is an administrator module. Looking for the integrated audits workflow?</span>
+          </div>
+          <Link
+            href="/admin/expert-assessment"
+            className="inline-flex items-center gap-1 font-semibold text-purple-700 hover:text-purple-900 hover:underline"
+          >
+            Go to Admin Expert Assessment <ArrowRight className="w-3.5 h-3.5" />
+          </Link>
+        </div>
+
+        {/* Header */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div>
           <h1 className="text-2xl font-bold tracking-tight text-[#111110] font-display">
@@ -628,6 +646,7 @@ export default function InferencePage() {
           icon={<Cpu className="h-6 w-6 text-zinc-700" />}
         />
       )}
-    </div>
+      </div>
+    </AdminAppShell>
   );
 }

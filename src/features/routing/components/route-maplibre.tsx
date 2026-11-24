@@ -62,7 +62,7 @@ function configureBuilding3DLayer(map: maplibregl.Map, show3D: boolean): void {
     const existing3D = map.getLayer("building-3d");
     if (existing3D) {
       map.setLayoutProperty("building-3d", "visibility", show3D ? "visible" : "none");
-      map.setPaintProperty("building-3d", "fill-extrusion-opacity", show3D ? 0.85 : 0);
+      map.setPaintProperty("building-3d", "fill-extrusion-opacity", show3D ? 0.35 : 0);
       return;
     }
 
@@ -70,7 +70,7 @@ function configureBuilding3DLayer(map: maplibregl.Map, show3D: boolean): void {
     const existingExtrusion = map.getLayer("3d-buildings-extrusion");
     if (existingExtrusion) {
       map.setLayoutProperty("3d-buildings-extrusion", "visibility", show3D ? "visible" : "none");
-      map.setPaintProperty("3d-buildings-extrusion", "fill-extrusion-opacity", show3D ? 0.85 : 0);
+      map.setPaintProperty("3d-buildings-extrusion", "fill-extrusion-opacity", show3D ? 0.35 : 0);
       return;
     }
 
@@ -81,7 +81,7 @@ function configureBuilding3DLayer(map: maplibregl.Map, show3D: boolean): void {
         source: "openmaptiles",
         "source-layer": "building",
         type: "fill-extrusion",
-        minzoom: 13,
+        minzoom: 14,
         filter: ["!=", ["get", "hide_3d"], true],
         layout: {
           visibility: show3D ? "visible" : "none",
@@ -104,21 +104,21 @@ function configureBuilding3DLayer(map: maplibregl.Map, show3D: boolean): void {
             "interpolate",
             ["linear"],
             ["zoom"],
-            13,
+            14,
             0,
-            14.5,
+            15.5,
             ["coalesce", ["get", "render_height"], ["get", "height"], 12],
           ],
           "fill-extrusion-base": [
             "interpolate",
             ["linear"],
             ["zoom"],
-            13,
+            14,
             0,
-            14.5,
+            15.5,
             ["coalesce", ["get", "render_min_height"], ["get", "min_height"], 0],
           ],
-          "fill-extrusion-opacity": 0.85,
+          "fill-extrusion-opacity": 0.35,
         },
       });
     }
@@ -167,7 +167,7 @@ export default function RouteMapLibre({
   }, [onSelectReport]);
 
   const [activeStyle, setActiveStyle] = useState<keyof typeof VECTOR_STYLES>("liberty");
-  const [show3DBuildings, setShow3DBuildings] = useState(true);
+  const [show3DBuildings, setShow3DBuildings] = useState(false);
   const [mapLoaded, setMapLoaded] = useState(false);
 
   // Markers

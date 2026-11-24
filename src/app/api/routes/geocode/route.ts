@@ -53,7 +53,7 @@ export async function GET(request: Request) {
             }
           }
         } catch {
-          // Graceful fallback to formatted coordinates
+          // Fall back gracefully to formatted coordinates
         }
       }
 
@@ -89,44 +89,49 @@ export async function GET(request: Request) {
         const data = await response.json();
         const features = data.features || [];
 
-        const results: GeocodingResult[] = features.map((f: {
-          id?: string;
-          properties?: {
-            label?: string;
-            name?: string;
-            locality?: string;
-            country?: string;
-            postalcode?: string;
-            confidence?: number;
-          };
-          geometry?: { coordinates?: [number, number] };
-        }, index: number) => {
-          const coords = f.geometry?.coordinates ?? [0, 0];
-          return {
-            id: f.id ?? `pelias-${index}-${Date.now()}`,
-            label: f.properties?.label ?? f.properties?.name ?? text,
-            name: f.properties?.name ?? text,
-            coordinates: {
-              latitude: coords[1],
-              longitude: coords[0],
+        const results: GeocodingResult[] = features.map(
+          (
+            f: {
+              id?: string;
+              properties?: {
+                label?: string;
+                name?: string;
+                locality?: string;
+                country?: string;
+                postalcode?: string;
+                confidence?: number;
+              };
+              geometry?: { coordinates?: [number, number] };
             },
-            locality: f.properties?.locality,
-            country: f.properties?.country,
-            postalCode: f.properties?.postalcode,
-            confidence: f.properties?.confidence,
-          };
-        });
+            index: number
+          ) => {
+            const coords = f.geometry?.coordinates ?? [0, 0];
+            return {
+              id: f.id ?? `pelias-${index}-${Date.now()}`,
+              label: f.properties?.label ?? f.properties?.name ?? text,
+              name: f.properties?.name ?? text,
+              coordinates: {
+                latitude: coords[1],
+                longitude: coords[0],
+              },
+              locality: f.properties?.locality,
+              country: f.properties?.country,
+              postalCode: f.properties?.postalcode,
+              confidence: f.properties?.confidence,
+            };
+          }
+        );
 
         if (results.length > 0) {
           return NextResponse.json({ results, source: "live_pelias" });
         }
       }
     } catch {
-      // Fallback to local demo dataset if Pelias fails
+      // Fallback only to known catalog demo locations if offline or query matches
     }
   }
 
-  // Local demo fallback: search DEMO_LOCATIONS
+  // Search against curated demonstration locations ONLY if text explicitly matches
   const queryLower = text.toLowerCase();
   const matched = DEMO_LOCATIONS.filter(
     (loc) =>
@@ -135,21 +140,13 @@ export async function GET(request: Request) {
       (loc.locality && loc.locality.toLowerCase().includes(queryLower))
   );
 
-  const results = matched.length > 0 ? matched : [
-    {
-      id: `synthetic-${Date.now()}`,
-      name: text,
-      label: `${text} (Map Selection)`,
-      coordinates: { latitude: 52.5200, longitude: 13.3700 },
-      locality: "City Center",
-      confidence: 0.8,
-    },
-    ...DEMO_LOCATIONS.slice(0, 3),
-  ];
-
+  // If no match found, NEVER invent fake Berlin coordinates!
   return NextResponse.json({
-    results,
-    source: "demo_dataset",
-    notice: apiKey ? undefined : "ORS_API_KEY not set. Using demonstration location suggestions.",
+    results: matched,
+    source: matched.length > 0 ? "demo_dataset" : "none",
+    notice:
+      matched.length === 0
+        ? "No matching locations found. You can select a point directly on the 3D map."
+        : undefined,
   });
 }

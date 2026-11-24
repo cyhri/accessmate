@@ -23,6 +23,9 @@ export interface RouteDetailsPanelProps {
   readonly selectedRouteIndex: number;
   readonly onSelectRoute: (index: number) => void;
   readonly profileName: string;
+  readonly onStartNavigation?: () => void;
+  readonly isNavigating?: boolean;
+  readonly isAcquiringGps?: boolean;
 }
 
 export function RouteDetailsPanel({
@@ -30,6 +33,9 @@ export function RouteDetailsPanel({
   selectedRouteIndex,
   onSelectRoute,
   profileName,
+  onStartNavigation,
+  isNavigating,
+  isAcquiringGps,
 }: RouteDetailsPanelProps) {
   const currentRoute = routes[selectedRouteIndex] ?? routes[0];
   const assessment = currentRoute?.assessment;
@@ -125,16 +131,30 @@ export function RouteDetailsPanel({
             </p>
           </div>
 
-          <div className="flex items-center gap-3 bg-zinc-50 p-2.5 rounded-xl border border-black/[0.04]">
-            <div className="text-center px-2">
-              <span className="text-[10px] uppercase font-bold text-zinc-400 block tracking-wider">Distance</span>
-              <span className="text-base font-bold text-zinc-900 font-mono tabular-nums">{currentRoute.distanceMeters}m</span>
+          <div className="flex flex-wrap items-center gap-3">
+            <div className="flex items-center gap-3 bg-zinc-50 p-2.5 rounded-xl border border-black/[0.04]">
+              <div className="text-center px-2">
+                <span className="text-[10px] uppercase font-bold text-zinc-400 block tracking-wider">Distance</span>
+                <span className="text-base font-bold text-zinc-900 font-mono tabular-nums">{currentRoute.distanceMeters}m</span>
+              </div>
+              <div className="h-6 w-px bg-black/[0.06]" />
+              <div className="text-center px-2">
+                <span className="text-[10px] uppercase font-bold text-zinc-400 block tracking-wider">Duration</span>
+                <span className="text-base font-bold text-zinc-900 font-mono tabular-nums">~{currentRoute.durationMinutes} min</span>
+              </div>
             </div>
-            <div className="h-6 w-px bg-black/[0.06]" />
-            <div className="text-center px-2">
-              <span className="text-[10px] uppercase font-bold text-zinc-400 block tracking-wider">Duration</span>
-              <span className="text-base font-bold text-zinc-900 font-mono tabular-nums">~{currentRoute.durationMinutes} min</span>
-            </div>
+
+            {onStartNavigation && !isNavigating && (
+              <button
+                type="button"
+                onClick={onStartNavigation}
+                disabled={isAcquiringGps}
+                className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-teal-600 hover:bg-teal-700 text-white font-semibold text-xs transition-all shadow-md shadow-teal-600/20 active:scale-95 cursor-pointer disabled:opacity-50"
+              >
+                <Navigation className="h-4 w-4" />
+                <span>{isAcquiringGps ? "Acquiring GPS Fix..." : "Start Live Navigation"}</span>
+              </button>
+            )}
           </div>
         </div>
 

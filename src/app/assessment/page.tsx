@@ -1,6 +1,9 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
+import Link from "next/link";
+import { AdminAppShell } from "@/components/layout/admin-app-shell";
+import { ArrowRight, Shield } from "lucide-react";
 import { SectionHeading } from "@/components/ui/section-heading";
 import { Alert, AlertTitle, AlertDescription } from "@/components/ui/alert";
 import {
@@ -98,59 +101,75 @@ export default function AssessmentPage() {
     : undefined;
 
   return (
-    <div className="space-y-6 pb-12">
-      {/* Page Title Heading */}
-      <SectionHeading
-        title="Building &amp; Facility Audits"
-        description="Inspect verified physical built-environment measurements, entrance specifications, elevator availability, and evidence confidence tiers."
-      />
+    <AdminAppShell>
+      <div className="space-y-6 pb-12">
+        {/* Admin Navigation Notice */}
+        <div className="bg-purple-50 border border-purple-200 rounded-xl p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-3 text-xs text-purple-900">
+          <div className="flex items-center gap-2">
+            <Shield className="w-4 h-4 text-purple-700 shrink-0" />
+            <span>This is an administrator module. Looking for the integrated audits workflow?</span>
+          </div>
+          <Link
+            href="/admin/assessments"
+            className="inline-flex items-center gap-1 font-semibold text-purple-700 hover:text-purple-900 hover:underline"
+          >
+            Go to Admin Assessments <ArrowRight className="w-3.5 h-3.5" />
+          </Link>
+        </div>
 
-      {/* Global Action Alerts */}
-      {alertInfo && (
-        <Alert variant={alertInfo.variant} className="transition-opacity animate-in fade-in">
-          <AlertTitle>{alertInfo.title}</AlertTitle>
-          <AlertDescription>{alertInfo.description}</AlertDescription>
-        </Alert>
-      )}
-
-      {/* View Orchestration */}
-      {view === "list" && (
-        <AssessmentList
-          assessments={assessments}
-          onSelect={handleSelect}
-          onEdit={handleEdit}
-          onDelete={handleDelete}
-          onCreateNew={handleCreateNew}
-          onResetSampleData={handleResetSampleData}
+        {/* Page Title Heading */}
+        <SectionHeading
+          title="Building & Facility Audits"
+          description="Inspect verified physical built-environment measurements, entrance specifications, elevator availability, and evidence confidence tiers."
         />
-      )}
 
-      {view === "detail" && selectedRecord && (
-        <AssessmentDetail
-          record={selectedRecord}
-          onBack={() => setView("list")}
-          onEdit={() => handleEdit(selectedRecord.id)}
-          onDelete={() => handleDelete(selectedRecord.id)}
-        />
-      )}
+        {/* Global Action Alerts */}
+        {alertInfo && (
+          <Alert variant={alertInfo.variant} className="transition-opacity animate-in fade-in">
+            <AlertTitle>{alertInfo.title}</AlertTitle>
+            <AlertDescription>{alertInfo.description}</AlertDescription>
+          </Alert>
+        )}
 
-      {view === "create" && (
-        <AssessmentForm
-          initialRecord={createEmptyAssessment()}
-          isNew={true}
-          onSave={handleSave}
-          onCancel={() => setView("list")}
-        />
-      )}
+        {/* View Orchestration */}
+        {view === "list" && (
+          <AssessmentList
+            assessments={assessments}
+            onSelect={handleSelect}
+            onEdit={handleEdit}
+            onDelete={handleDelete}
+            onCreateNew={handleCreateNew}
+            onResetSampleData={handleResetSampleData}
+          />
+        )}
 
-      {view === "edit" && selectedRecord && (
-        <AssessmentForm
-          initialRecord={selectedRecord}
-          isNew={false}
-          onSave={handleSave}
-          onCancel={() => setView("detail")}
-        />
-      )}
-    </div>
+        {view === "detail" && selectedRecord && (
+          <AssessmentDetail
+            record={selectedRecord}
+            onBack={() => setView("list")}
+            onEdit={() => handleEdit(selectedRecord.id)}
+            onDelete={() => handleDelete(selectedRecord.id)}
+          />
+        )}
+
+        {view === "create" && (
+          <AssessmentForm
+            initialRecord={createEmptyAssessment()}
+            isNew={true}
+            onSave={handleSave}
+            onCancel={() => setView("list")}
+          />
+        )}
+
+        {view === "edit" && selectedRecord && (
+          <AssessmentForm
+            initialRecord={selectedRecord}
+            isNew={false}
+            onSave={handleSave}
+            onCancel={() => setView("detail")}
+          />
+        )}
+      </div>
+    </AdminAppShell>
   );
 }

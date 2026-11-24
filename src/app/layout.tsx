@@ -3,7 +3,7 @@ import localFont from "next/font/local";
 import { Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { siteConfig } from "@/config/site";
-import { AppShell } from "@/components/layout/app-shell";
+import { AuthProvider } from "@/features/auth";
 
 const ltSuperior = localFont({
   src: [
@@ -68,7 +68,7 @@ export default function RootLayout({
       className={`${ltSuperior.variable} ${aristotelica.variable} ${geistMono.variable} h-full antialiased`}
     >
       <body className="min-h-full flex flex-col bg-[#fbfbfa] text-[#111110] selection:bg-teal-500/15 selection:text-teal-900 font-sans tracking-[-0.011em]">
-        <AppShell>{children}</AppShell>
+        <AuthProvider>{children}</AuthProvider>
       </body>
     </html>
   );
